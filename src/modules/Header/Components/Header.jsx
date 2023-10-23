@@ -9,7 +9,7 @@ const Header = () => {
   };
   return (
     <>
-      <Flex h={"2.7rem"} pl={"1rem"}>
+      <Flex h={"2.7rem"} w={'100%'} pl={"1rem"}>
         <Image
           mt={"0.4rem"}
           src="/assets/Logo/trello-logo-gradient-neutral@2x.png"

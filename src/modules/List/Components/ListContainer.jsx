@@ -1,8 +1,9 @@
-import { HStack,Box, Heading} from "@chakra-ui/react";
+import { Box, CardHeader, HStack, Heading,Card} from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
-const ListContainer = () => {
+import List from "./List";
+const ListContainer = ({color=undefined,url='undefined'}) => {
   const initalState = {
     data : undefined,
     error : false,
@@ -24,12 +25,17 @@ const ListContainer = () => {
     })
   },[])
   return (
-    <HStack spacing={'28'}>
+    <Box maxW="100%" px={'2rem'} pt={'1rem'} minH={'100vh'} overflowX="auto" bgColor={color} bgImage={url} bgRepeat={'no-repeat'} bgSize={'cover'}>
+      <HStack minW={'fit-content'} spacing={'10'}>
       {!state.error && state.loading ? <Heading>Loading</Heading> : null}
       {!state.error && !state.loading ? state.data.map((list)=>{
-        return <Box>{list.name}</Box>
-      }) : null}
+        return <List key={list.id} id={list.id} name={list.name} />
+      }) : null}   
+    <Card minH={'fit-content'} mt={'-8rem'} w={'20rem'} opacity={'0.7'} borderRadius={'2xl'} cursor={'pointer'}>
+        <CardHeader>Add another list</CardHeader>
+      </Card>
     </HStack>
+    </Box>
   );
 };
 

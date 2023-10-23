@@ -4,7 +4,6 @@ import React from "react";
 const Board = ({ id = "", color = undefined, url = undefined, name = "" }) => {
   const style = {
     h: "10rem",
-    w: "20rem",
   };
   return (
     <Box
