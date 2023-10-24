@@ -1,17 +1,28 @@
-import { Button, Card, CardBody, CardHeader, CloseButton, HStack, Input } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Button, Card, CardBody, CloseButton, HStack, Input } from '@chakra-ui/react'
+import React, { useRef, useState,useEffect } from 'react'
 
-const CollapseForm = ({isOpen,onToggle}) => {
+const CollapseForm = ({onToggle,addList,handleInputChange}) => {
   const [input,setInput] = useState('');
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
+    handleInputChange(text);
   }
+  const handleClick = ()=>{
+    addList();
+    setInput('')
+  }
+  const inputRef = useRef();
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+  
   return (
-    <Card mt={'-10'} backgroundColor={'#f1f2f4'} display={isOpen?'flex' : 'none'}  w={"20rem"} minHeight={'fit-content'} borderRadius={'2xl'}>
+    
+    <Card ref={inputRef} backgroundColor={'#f1f2f4'}  w={"20rem"} h={'fit-content'} borderRadius={'2xl'}>
       <CardBody>
         <Input value={input} onChange={handleChange} backgroundColor={'white'} autoFocus={true} placeholder='Enter List title...' />
-        <HStack py={'1rem'}><Button colorScheme='blue'>Add list</Button> <CloseButton onClick={onToggle} /></HStack>
+        <HStack py={'1rem'}><Button colorScheme='blue' onClick={handleClick}>Add list</Button> <CloseButton onClick={onToggle} /></HStack>
       </CardBody>
     </Card>
 
