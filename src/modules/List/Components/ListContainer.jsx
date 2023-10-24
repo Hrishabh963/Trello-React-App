@@ -61,7 +61,6 @@ const ListContainer = () => {
 
   //Using useReducer to handle API fetching
   const [state, dispatcher] = useReducer(reducer, initalState);
-  console.log(state);
   const { isOpen, onToggle } = useDisclosure();
 
   //Fetching data to display
