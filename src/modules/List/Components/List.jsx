@@ -43,7 +43,7 @@ const List = ({name = '' , id=''}) => {
     if(state.inputValue === '')return;
     postCard(state.inputValue,id)
     .then((data)=>{
-      dispatcher({type:'post',payload:{id:data.id,name:data.name,idChecklists : data.idChecklists}});
+      dispatcher({type:'post',payload:{id:data.id,name:data.name}});
     })
     dispatcher({type:'setInput',payload:''});
   }
@@ -68,7 +68,7 @@ const List = ({name = '' , id=''}) => {
         </Flex>
       </CardHeader>
       <CardBody mt={'-10'}>
-        <CardsContainer cards={state.cards} />
+        <CardsContainer list={name} cards={state.cards} />
       </CardBody>
       <CardFooter mt={'-10'}>
         <Flex direction={'column'} w={'100%'}>
@@ -84,7 +84,7 @@ export default List
 
 const getCards = async (id)=>{
 try {
-    const response = await axios.get(`https://api.trello.com/1/lists/${id}/cards?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}&fields=name,idChecklists`);
+    const response = await axios.get(`https://api.trello.com/1/lists/${id}/cards?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
     return  response.data;
 } catch (error) {
     throw error;
