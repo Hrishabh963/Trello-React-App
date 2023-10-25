@@ -77,9 +77,6 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
         </Flex>   
         </Flex>
         </ModalBody>
-        <ModalFooter>
-        <h1>This is modal footer</h1>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   )

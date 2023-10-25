@@ -14,7 +14,7 @@ const Card = ({id='',list='',name=''}) => {
     h={'1'}
     className='delete_card'
     id={id}
-    _hover={{bgColor:'#FFFFFF'}}
+    _hover={{bgColor:'#FFFFFF',color:'red'}}
     variant={'ghost'}
     icon={<DeleteIcon />}
     mt={'3.5'}

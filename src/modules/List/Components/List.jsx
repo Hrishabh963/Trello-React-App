@@ -64,7 +64,7 @@ const List = ({name = '' , id=''}) => {
       <CardHeader fontWeight={'bold'} fontSize={'0.9rem'}>
         <Flex w={'100%'} justifyContent={'space-between'}>
         <Text>{name}</Text>
-        <IconButton id={id} icon={<DeleteIcon />} mt={'-2'} cursor={'pointer'} className='delete_list'  />
+        <IconButton id={id} _hover={{color:'red'}}  icon={<DeleteIcon />} mt={'-2'} cursor={'pointer'} className='delete_list'  />
         </Flex>
       </CardHeader>
       <CardBody mt={'-10'}>
@@ -91,7 +91,6 @@ try {
 }
 }
 const postCard = async (name,id)=>{
-  console.log(name,id);
   try {
     const response = await axios.post(`https://api.trello.com/1/cards?idList=${id}&name=${name}&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`)
     return response.data;
