@@ -13,7 +13,7 @@ const initalState = {
     inputValue: ''
   }
 
-const Checklist = ({id='',name=''}) => {
+const Checklist = ({id='',name='',cardId=''}) => {
   const [state,dispatcher] = useReducer(reducer,initalState);
   const {isOpen,onToggle} = useDisclosure();
 
@@ -34,6 +34,14 @@ const Checklist = ({id='',name=''}) => {
     })
   }
 
+  const handleCheckState = (check,checkItemId)=>{
+    console.log(check,checkItemId);
+    dispatcher({type:'changeState',payload:{check : check,id : checkItemId}});
+    dispatcher({type:'setPercentage'});
+    updateCheckState(cardId,id,checkItemId,state.checkItems,check)
+  }
+
+
   const handleDelete = (event)=>{
     const trigger = event.target.closest('.delete_checkitem');
     if(!trigger) return;
@@ -50,23 +58,24 @@ const Checklist = ({id='',name=''}) => {
     })
   }
 
+
   useEffect(()=>{
     getCheckItems(id)
     .then((data)=>{
         dispatcher({type:'fetch',payload:data});
+        dispatcher({type:'setPercentage'});
     })
     .catch((error)=>{
         console.log(error);
         dispatcher({type:'error'});
     })
   },[])
-  const percentage = state.percentage;
   return (
     <Flex direction={'column'} py={'3'} onClick={handleDelete}>
         <Flex width={'100%'}><CheckCircleIcon mt={'1'} /><Text fontSize={'lg'} fontWeight={'bold'} pl={'2'}>{name}</Text><IconButton id={id} className='delete_checklist' h={'5'} mt={'1'} ml={'3'} _hover={{bgColor:'#FFFFFF',color:'red'}} variant={'ghost'} icon={<DeleteIcon />} /></Flex>
-        <Flex alignItems={'center'}><Text pr={'2'}>{percentage}%</Text><Progress size={'sm'} w={'90%'} colorScheme={'green'} value={state.percentage} /></Flex>
+        <Flex alignItems={'center'}><Text pr={'2'}>{state.percentage}%</Text><Progress size={'sm'} w={'90%'} colorScheme={'green'} value={state.percentage} /></Flex>
         {state.checkItems.map((checkitem)=>{
-            return <Checkitem key={checkitem.id} name={checkitem.name} id={checkitem.id} />
+            return <Checkitem handleCheckState={handleCheckState} key={checkitem.id} checked={checkitem.state === 'complete' ? true : false} name={checkitem.name} id={checkitem.id} />
         })}
         <Flex pt={'2'} direction={'column'} w={'20%'}>
         <Button display={isOpen ? 'none' : 'flex'} colorScheme='gray' fontSize={'sm'} onClick={onToggle} >Add an item</Button>
@@ -105,6 +114,40 @@ const deleteCheckItem = async (checkListId,checkItemId)=>{
     }
 }
 
+const updateCheckState = async (cardId,checkListId,checkItemId,checkItems,checked)=>{
+    try {
+        const check = checked ? "complete" : "incomplete";
+        let obj =  checkItems.find(checkItem=>checkItem.id===checkItemId);
+        obj = {...obj,state:check};
+        const response = await axios.put(`https://api.trello.com/1/cards/${cardId}/checklist/${checkListId}/checkItem/${checkItemId}?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`,obj);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const calculatePercentage = (checkItems)=>{
+    const total = checkItems.length;
+    if(total === 0)return 0;
+    let checked = 0;
+    for (const checkItem of checkItems) {
+        if(checkItem.state === 'complete')
+        checked++;
+    }
+    const percentage = ((checked/total)*100).toFixed(0);
+    return percentage;
+  }
+
+const changeState = (checked,id,checkItems)=>{
+    const status = checked ? "complete" : "incomplete";
+    const UpdatedData = checkItems.map((checkItem)=>{
+        if(checkItem.id === id){
+            return {...checkItem,state : status}
+        }
+        else return checkItem;
+    })
+    return UpdatedData;
+}
 const reducer = (state,action)=>{
     switch (action.type){
       case "fetch":{
@@ -138,6 +181,18 @@ const reducer = (state,action)=>{
         return{
           ...state,
           inputValue : action.payload
+        }
+      }
+      case "setPercentage":{
+        return{
+            ...state,
+            percentage: calculatePercentage(state.checkItems)
+        }
+      }
+      case "changeState" : {
+        return{
+            ...state,
+            checkItems:changeState(action.payload.check,action.payload.id,state.checkItems)
         }
       }
       default:

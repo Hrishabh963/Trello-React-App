@@ -1,5 +1,5 @@
 import { CalendarIcon } from '@chakra-ui/icons'
-import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text,Flex } from '@chakra-ui/react'
+import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text,Flex, Spacer } from '@chakra-ui/react'
 import React, { useEffect, useReducer } from 'react'
 import PopoverForm from '../PopoverForm'
 import axios from 'axios'
@@ -70,13 +70,16 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
         <ModalCloseButton />
         <ModalBody onClick={handleDelete}>
         <Flex width={'100%'}>
-            <ChecklistContainer checkLists={state.checkLists} />
+            <ChecklistContainer cardId={id} checkLists={state.checkLists} />
          <Flex direction={'column'} basis={'15%'}>
             <Text fontWeight={'bold'} pl={'2'} color={'#44546f'} fontSize={'sm'}>Add to card</Text>
             <PopoverForm handleInput={handleInput} addNewCheckList={addNewCheckList} />
         </Flex>   
         </Flex>
         </ModalBody>
+        <ModalFooter>
+          <Spacer />
+        </ModalFooter>
       </ModalContent>
     </Modal>
   )

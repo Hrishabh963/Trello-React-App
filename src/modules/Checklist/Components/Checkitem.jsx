@@ -2,10 +2,11 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import { Checkbox, Flex, IconButton } from '@chakra-ui/react'
 import React, { useState } from 'react'
 
-const Checkitem = ({name,id}) => {
-    const [check,setCheck] = useState(false);
+const Checkitem = ({name,id,checked,handleCheckState}) => {
+    const [check,setCheck] = useState(checked);
     const handleCheck = ()=>{
         setCheck(!check);
+        handleCheckState(!check,id);
     }
   return (
     <Flex>
