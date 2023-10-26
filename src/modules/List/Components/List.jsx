@@ -9,23 +9,23 @@ import { useErrorBoundary } from 'react-error-boundary'
 
 
 const List = ({name = '' , id=''}) => {
-  const [state, dispatcher] = useReducer(listReducer, listInitalState);
+  const [state, dispatch] = useReducer(listReducer, listInitalState);
   const {showBoundary} = useErrorBoundary();
   const ref = useRef()
   useOutsideClick({
     ref:ref,
     handler : ()=>{
       if(state.showForm){
-        dispatcher({type:'showForm'})
+        dispatch({type:'showForm'})
       }
     }
   })
   const toggleForm = ()=>{
-    dispatcher({type :'showForm'})
+    dispatch({type :'showForm'})
   }
 
   const handleInputChange = (value)=>{
-    dispatcher({type:'setInput',payload:value});
+    dispatch({type:'setInput',payload:value});
   }
 
   const handleDelete = (event)=>{
@@ -35,7 +35,7 @@ const List = ({name = '' , id=''}) => {
     deleteCard(triggerId)
     .then((status)=>{
       if(status === 200){
-        dispatcher({type:'deleteCard',payload:triggerId})
+        dispatch({type:'deleteCard',payload:triggerId})
       }
     })
     .catch(error=>{
@@ -47,8 +47,8 @@ const List = ({name = '' , id=''}) => {
     if(state.inputValue === '')return;
     postCard(state.inputValue,id)
     .then((data)=>{
-      dispatcher({type:'post',payload:{id:data.id,name:data.name}});
-      dispatcher({type:'setInput',payload:''});
+      dispatch({type:'post',payload:{id:data.id,name:data.name}});
+      dispatch({type:'setInput',payload:''});
     })
     .catch((error)=>{
       showBoundary(error);
@@ -59,7 +59,7 @@ const List = ({name = '' , id=''}) => {
   useEffect(()=>{
     getCards(id)
     .then((data)=>{
-      dispatcher({type:'fetch',payload:data});
+      dispatch({type:'fetch',payload:data});
     })
     .catch((error)=>{
       showBoundary(error);

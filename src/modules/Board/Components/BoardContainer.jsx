@@ -11,7 +11,7 @@ import { useErrorBoundary } from "react-error-boundary";
 const BoardContainer = () => {
   const { showBoundary } = useErrorBoundary();
   const {isOpen,onOpen,onClose} = useDisclosure();
-  const [state, dispatcher] = useReducer(reducer, initalState);
+  const [state, dispatch] = useReducer(reducer, initalState);
   const navigate = useNavigate();
 
   const handleNavigate = (event) => {
@@ -21,15 +21,15 @@ const BoardContainer = () => {
   };
 
   const handleInput = (value)=>{
-    dispatcher({type:'setInput',payload:value});
+    dispatch({type:'setInput',payload:value});
   }
 
   const addBoard = ()=>{
     if(state.input === '') return;
     postBoard(state.input)
     .then((data)=>{
-      dispatcher({type:'post',payload:data});
-      dispatcher({type:'setInput',payload:''});
+      dispatch({type:'post',payload:data});
+      dispatch({type:'setInput',payload:''});
     })
     .catch((error)=>{
       showBoundary(error);
@@ -42,7 +42,7 @@ const BoardContainer = () => {
   useEffect(()=>{
     getBoards(showBoundary)
     .then((data)=>{
-        dispatcher({type:'fetch',payload:data});
+        dispatch({type:'fetch',payload:data});
     })
     .catch((error)=>{
       showBoundary(error);

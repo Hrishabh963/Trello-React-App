@@ -20,7 +20,7 @@ const ListContainer = () => {
   //Getting board id
   const { id } = useParams();
   //Using useReducer to handle API fetching and state change 
-  const [state, dispatcher] = useReducer(listContainerReducer, listContainerInitalState);
+  const [state, dispatch] = useReducer(listContainerReducer, listContainerInitalState);
   const { isOpen, onToggle } = useDisclosure();
   const {showBoundary} = useErrorBoundary();
   const ref = useRef();
@@ -37,18 +37,18 @@ const ListContainer = () => {
     if(state.inputValue === '') return;
     postListData(state.inputValue,id)
     .then((data)=>{
-      dispatcher({type:'post',payload:data})
+      dispatch({type:'post',payload:data})
     })
     .catch((error)=>{
       showBoundary(error);
       
     })
-    dispatcher({type:'setInput',payload:''})
+    dispatch({type:'setInput',payload:''})
   }
 
   //Function to handle the change in input field
   const handleInputChange = (value)=>{
-    dispatcher({type:'setInput',payload:value})
+    dispatch({type:'setInput',payload:value})
   }
 
   //Function to delete list from board
@@ -58,7 +58,7 @@ const ListContainer = () => {
     const listId = trigger.id;
     deleteList(listId)
     .then((data)=>{
-      dispatcher({type:'delete',payload:data.id});
+      dispatch({type:'delete',payload:data.id});
     })
     .catch((error)=>{
       showBoundary(error);
@@ -69,14 +69,14 @@ const ListContainer = () => {
   useEffect(() => {
     getListData(id)
       .then((data) => {
-        dispatcher({ type: "fetch", payload: data });
+        dispatch({ type: "fetch", payload: data });
       })
       .catch((error) => {
         showBoundary(error);
       });
     getParentData(id)
     .then((data)=>{
-      dispatcher({type:'setColor',payload:data})
+      dispatch({type:'setColor',payload:data})
     })
     .catch((error)=>{
       showBoundary(error);

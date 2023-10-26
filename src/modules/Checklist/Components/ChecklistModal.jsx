@@ -8,19 +8,19 @@ import { checkListReducer, checkListinitalState } from '../Utils/checkListHelper
 import { useErrorBoundary } from 'react-error-boundary'
 
 const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
-  const [state,dispatcher] = useReducer(checkListReducer,checkListinitalState);
+  const [state,dispatch] = useReducer(checkListReducer,checkListinitalState);
   const {showBoundary} = useErrorBoundary();
 
   const handleInput = (value)=>{
-    dispatcher({type:'setInput',payload:value});    
+    dispatch({type:'setInput',payload:value});    
     }
 
   const addNewCheckList = ()=>{
     if(state.inputValue === '') return;
     addChecklist(id,state.inputValue)
     .then((data)=>{
-        dispatcher({type:'post',payload:data});
-        dispatcher({type:'setInput',payload:''});
+        dispatch({type:'post',payload:data});
+        dispatch({type:'setInput',payload:''});
     })
     .catch((error)=>{
         showBoundary(error);
@@ -34,7 +34,7 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
     deleteChecklist(triggerId)
     .then((status)=>{
         if(status === 200){
-            dispatcher({type:'delete',payload:triggerId});
+            dispatch({type:'delete',payload:triggerId});
         }
     })
     .catch(error=>{
@@ -46,7 +46,7 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
   useEffect(()=>{
     getChecklists(id)
     .then((data)=>{
-        dispatcher({type:'fetch',payload:data})
+        dispatch({type:'fetch',payload:data})
     })
     .catch((error)=>{
         showBoundary(error);

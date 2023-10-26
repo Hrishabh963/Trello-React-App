@@ -7,7 +7,7 @@ import { getCheckItems,postCheckItem,deleteCheckItem,updateCheckState } from '..
 import { reducer,initalState } from '../Utils/checkItemsHelper'
 import { useErrorBoundary } from 'react-error-boundary'
 const Checklist = ({id='',name='',cardId=''}) => {
-  const [state,dispatcher] = useReducer(reducer,initalState);
+  const [state,dispatch] = useReducer(reducer,initalState);
   const {isOpen,onToggle} = useDisclosure();
   const {showBoundary} = useErrorBoundary();
   const ref = useRef();
@@ -20,16 +20,16 @@ const Checklist = ({id='',name='',cardId=''}) => {
     }
   })
   const handleInputChange = (value)=>{
-    dispatcher({type:'setInput',payload:value});
+    dispatch({type:'setInput',payload:value});
   }
 
   const addCheckItem = ()=>{
     if(state.inputValue === '') return;
     postCheckItem(id,state.inputValue)
     .then((data)=>{
-        dispatcher({type:'post',payload:data});
-        dispatcher({type:'setInput',payload:''});
-        dispatcher({type:'setPercentage'})
+        dispatch({type:'post',payload:data});
+        dispatch({type:'setInput',payload:''});
+        dispatch({type:'setPercentage'})
     })
     .catch((error)=>{
         showBoundary(error);
@@ -37,8 +37,8 @@ const Checklist = ({id='',name='',cardId=''}) => {
   }
 
   const handleCheckState = (check,checkItemId)=>{
-    dispatcher({type:'changeState',payload:{check : check,id : checkItemId}});
-    dispatcher({type:'setPercentage'});
+    dispatch({type:'changeState',payload:{check : check,id : checkItemId}});
+    dispatch({type:'setPercentage'});
     updateCheckState(cardId,id,checkItemId,state.checkItems,check)
   }
 
@@ -50,8 +50,8 @@ const Checklist = ({id='',name='',cardId=''}) => {
     deleteCheckItem(id,triggerId)
     .then((status)=>{
         if(status === 200){
-            dispatcher({type:'delete',payload:triggerId});
-            dispatcher({type:'setPercentage'})
+            dispatch({type:'delete',payload:triggerId});
+            dispatch({type:'setPercentage'})
         }
     })
     .catch((error)=>{
@@ -63,8 +63,8 @@ const Checklist = ({id='',name='',cardId=''}) => {
   useEffect(()=>{
     getCheckItems(id)
     .then((data)=>{
-        dispatcher({type:'fetch',payload:data});
-        dispatcher({type:'setPercentage'});
+        dispatch({type:'fetch',payload:data});
+        dispatch({type:'setPercentage'});
     })
     .catch((error)=>{
         showBoundary(error);
