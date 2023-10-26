@@ -5,10 +5,12 @@ import CardsContainer from '../../Card/Components/CardsContainer'
 import CollapseText from './CollapseText'
 import { getCards, postCard, deleteCard } from '../Utils/ListApi'
 import { listReducer , listInitalState} from '../Utils/listHelper'
+import { useErrorBoundary } from 'react-error-boundary'
 
 
 const List = ({name = '' , id=''}) => {
   const [state, dispatcher] = useReducer(listReducer, listInitalState);
+  const {showBoundary} = useErrorBoundary();
 
   const toggleForm = ()=>{
     dispatcher({type :'showForm'})
@@ -29,7 +31,7 @@ const List = ({name = '' , id=''}) => {
       }
     })
     .catch(error=>{
-      console.log(error)
+      showBoundary(error)
       dispatcher({type:'error'});
     })
   }
@@ -42,7 +44,7 @@ const List = ({name = '' , id=''}) => {
       dispatcher({type:'setInput',payload:''});
     })
     .catch((error)=>{
-      console.log(error);
+      showBoundary(error);
       dispatcher({type:'error'})
     })
     
@@ -54,7 +56,7 @@ const List = ({name = '' , id=''}) => {
       dispatcher({type:'fetch',payload:data});
     })
     .catch((error)=>{
-      console.log(error);
+      showBoundary(error);
       dispatcher({type : 'error'})
     })
   },[])

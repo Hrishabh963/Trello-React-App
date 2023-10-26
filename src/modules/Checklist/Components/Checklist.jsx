@@ -5,9 +5,11 @@ import Checkitem from './Checkitem'
 import CheckItemForm from './CheckItemForm'
 import { getCheckItems,postCheckItem,deleteCheckItem,updateCheckState } from '../Utils/checkItemApi'
 import { reducer,initalState } from '../Utils/checkItemsHelper'
+import { useErrorBoundary } from 'react-error-boundary'
 const Checklist = ({id='',name='',cardId=''}) => {
   const [state,dispatcher] = useReducer(reducer,initalState);
   const {isOpen,onToggle} = useDisclosure();
+  const {showBoundary} = useErrorBoundary();
 
   const handleInputChange = (value)=>{
     dispatcher({type:'setInput',payload:value});
@@ -22,7 +24,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
         dispatcher({type:'setPercentage'})
     })
     .catch((error)=>{
-        console.log(error);
+        showBoundary(error);
         dispatcher({type:'error'});
     })
   }
@@ -45,7 +47,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
         }
     })
     .catch((error)=>{
-        console.log(error);
+        showBoundary(error);
         dispatcher({type:'error'})
     })
   }
@@ -58,7 +60,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
         dispatcher({type:'setPercentage'});
     })
     .catch((error)=>{
-        console.log(error);
+        showBoundary(error);
         dispatcher({type:'error'});
     })
   },[])

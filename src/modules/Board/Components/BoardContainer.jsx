@@ -5,8 +5,11 @@ import { useNavigate } from "react-router-dom";
 import ModalForm from "./ModalForm";
 import { getBoards,postBoard } from "../Utils/BoardApi";
 import { reducer,initalState } from "../Utils/boardHelper";
+import Loader from "../../Common/Components/Loader";
+import { useErrorBoundary } from "react-error-boundary";
 
 const BoardContainer = () => {
+  const { showBoundary } = useErrorBoundary();
   const {isOpen,onOpen,onClose} = useDisclosure();
   const [state, dispatcher] = useReducer(reducer, initalState);
   const navigate = useNavigate();
@@ -30,7 +33,7 @@ const BoardContainer = () => {
       dispatcher({type:'setInput',payload:''});
     })
     .catch((error)=>{
-      console.log(error);
+      showBoundary(error);
       dispatcher({type:'error'});
     })
     onClose();
@@ -39,12 +42,13 @@ const BoardContainer = () => {
 
   //Fetching all data
   useEffect(()=>{
-    getBoards()
+    getBoards(showBoundary)
     .then((data)=>{
         dispatcher({type:'fetch',payload:data});
     })
     .catch((error)=>{
-        dispatcher({type:'error'});
+      showBoundary(error);
+      dispatcher({type:'error'});
     })
   },[])
 
@@ -56,6 +60,7 @@ const BoardContainer = () => {
       spacing='60px'
       onClick={handleNavigate}
     >
+      {state.loading ? <Loader /> : null}
       {state.data ? (
         state.data.map((board) => {
           return (
@@ -68,10 +73,8 @@ const BoardContainer = () => {
             />
           );
         })
-      ) : (
-        <h1>loading</h1>
-      )}
-      {state.data ? <Box h={'10rem'} display={'flex'} alignItems={'center'} onClick={onOpen} justifyContent={'center'} bgColor={'#091e4224'} borderRadius={'2xl'} _hover={{bgColor:'#091E424F'}}>
+      ) : null}
+      {!state.error && !state.loading &&state.data ? <Box h={'10rem'} display={'flex'} alignItems={'center'} onClick={onOpen} justifyContent={'center'} bgColor={'#091e4224'} borderRadius={'2xl'} _hover={{bgColor:'#091E424F'}}>
         <Text fontSize={'base'}>Create new board</Text>
       </Box> : null}
       <ModalForm input={state.input} handleInput={handleInput} isOpen={isOpen} onClose={onClose} postBoard={addBoard} />

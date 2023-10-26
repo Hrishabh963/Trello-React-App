@@ -5,9 +5,11 @@ import PopoverForm from './PopoverForm'
 import ChecklistContainer from './ChecklistContainer'
 import { getChecklists,addChecklist,deleteChecklist } from '../Utils/checkListApi'
 import { checkListReducer, checkListinitalState } from '../Utils/checkListHelper'
+import { useErrorBoundary } from 'react-error-boundary'
 
 const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
-  const [state,dispatcher] = useReducer(checkListReducer,checkListinitalState)
+  const [state,dispatcher] = useReducer(checkListReducer,checkListinitalState);
+  const {showBoundary} = useErrorBoundary();
 
   const handleInput = (value)=>{
     dispatcher({type:'setInput',payload:value});    
@@ -21,7 +23,7 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
         dispatcher({type:'setInput',payload:''});
     })
     .catch((error)=>{
-        console.log(error);
+        showBoundary(error);
         dispatcher({type:'error'});
     })
   }
@@ -37,7 +39,7 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
         }
     })
     .catch(error=>{
-        console.log(error);
+        showBoundary(error);
         dispatcher({type:'error'});
     })
   }
@@ -49,10 +51,11 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
         dispatcher({type:'fetch',payload:data})
     })
     .catch((error)=>{
-        console.log(error);
+        showBoundary(error);
         dispatcher({type:'error'});
     })
   },[])
+  
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={'2xl'}>
       <ModalOverlay />

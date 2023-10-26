@@ -1,9 +1,9 @@
 import axios from "axios";
-
 const key =
     import.meta.env.VITE_API_KEY;
 const token =
     import.meta.env.VITE_API_TOKEN;
+
 
 export const getBoards = async() => {
     try {
@@ -12,6 +12,7 @@ export const getBoards = async() => {
           key
         }&token=${token}`
         );
+        console.log(response.status);
         return response.data;
     } catch (error) {
         throw error;

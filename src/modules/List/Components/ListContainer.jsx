@@ -12,6 +12,8 @@ import List from "./List";
 import CollapseForm from "./CollapseForm";
 import { getListData,postListData,getParentData,deleteList } from "../Utils/ListApi";
 import { listContainerReducer,listContainerInitalState } from "../Utils/listHelper";
+import Loader from "../../Common/Components/Loader";
+import { useErrorBoundary } from "react-error-boundary";
 
 const ListContainer = () => { 
   //Getting board id
@@ -19,7 +21,7 @@ const ListContainer = () => {
   //Using useReducer to handle API fetching and state change 
   const [state, dispatcher] = useReducer(listContainerReducer, listContainerInitalState);
   const { isOpen, onToggle } = useDisclosure();
-
+  const {showBoundary} = useErrorBoundary();
   //Function to add list to the board
   const addList = ()=>{
     if(state.inputValue === '') return;
@@ -28,7 +30,7 @@ const ListContainer = () => {
       dispatcher({type:'post',payload:data})
     })
     .catch((error)=>{
-      console.log(error);
+      showBoundary(error);
       dispatcher({type:'error'})
     })
     dispatcher({type:'setInput',payload:''})
@@ -49,7 +51,7 @@ const ListContainer = () => {
       dispatcher({type:'delete',payload:data.id});
     })
     .catch((error)=>{
-      console.log(error);
+      showBoundary(error);
       dispatcher({type:'error'})
     })
   }
@@ -61,7 +63,7 @@ const ListContainer = () => {
         dispatcher({ type: "fetch", payload: data });
       })
       .catch((error) => {
-        console.log(error);
+        showBoundary(error);
         dispatcher({ type: 'error' });
       });
     getParentData(id)
@@ -69,7 +71,7 @@ const ListContainer = () => {
       dispatcher({type:'setColor',payload:data})
     })
     .catch((error)=>{
-      console.log(error);
+      showBoundary(error);
       dispatcher({ type: 'error' });
     })
   }, []);
@@ -89,13 +91,13 @@ const ListContainer = () => {
 
     >
       <Flex minW={"fit-content"} spacing={"10"} onClick={handleDelete} gap={'2rem'}>
-        {!state.error && state.loading ? <Heading>Loading</Heading> : null}
+        {!state.error && state.loading ? <Loader />: null}
         {!state.error && !state.loading
           ? state.data.map((list) => {
               return <List key={list.id} id={list.id} name={list.name} />;
             })
           : null}
-        <Card
+        {!state.error && !state.loading ? <Card
           display={isOpen?'none':'flex'}
           h={"fit-content"}
           w={"20rem"}
@@ -104,7 +106,7 @@ const ListContainer = () => {
           cursor={"pointer"}
         >
           <CardHeader onClick={onToggle}>Add another list...</CardHeader>
-        </Card>
+        </Card> : null}
         {isOpen ? <CollapseForm onToggle={onToggle} addList={addList} handleInputChange={handleInputChange} /> : null}
       </Flex>
     </Box>
