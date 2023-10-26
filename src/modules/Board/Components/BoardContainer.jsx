@@ -1,24 +1,16 @@
-import { Box, Modal, ModalBody,ModalOverlay,ModalHeader ,ModalCloseButton, ModalContent, SimpleGrid, Text, useDisclosure, Input, Button, Flex } from "@chakra-ui/react";
-import { useEffect,useReducer,useState} from "react";
+import { Box, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
+import { useEffect,useReducer} from "react";
 import Board from "./Board";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import ModalForm from "./ModalForm";
-const key = import.meta.env.VITE_API_KEY;
-const token = import.meta.env.VITE_API_TOKEN;
-const initalState = {
-  data: undefined,
-  error: false,
-  loading: true,
-  input : ''
-};
+import { getBoards,postBoard } from "../Utils/BoardApi";
+import { reducer,initalState } from "../Utils/boardHelper";
 
 const BoardContainer = () => {
   const {isOpen,onOpen,onClose} = useDisclosure();
-  const [input,setInput] = useState('');
   const [state, dispatcher] = useReducer(reducer, initalState);
-  console.log(state);
   const navigate = useNavigate();
+
   const handleNavigate = (event) => {
     const trigger = event.target.closest(".boards");
     if (!trigger) return;
@@ -26,12 +18,20 @@ const BoardContainer = () => {
   };
 
   const handleInput = (value)=>{
-    setInput(value);
+    dispatcher({type:'setInput',payload:value});
   }
 
-  const postBoard = async () =>{
-    const response = await axios.post(`https://api.trello.com/1/boards/?name=${input}&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-    dispatcher({type:'post',payload:response.data});
+  const addBoard = ()=>{
+    if(state.input === '') return;
+    postBoard(state.input)
+    .then((data)=>{
+      dispatcher({type:'post',payload:data});Set
+      dispatcher({type:'setInput',payload:''});
+    })
+    .catch((error)=>{
+      console.log(error);
+      dispatcher({type:'error'});
+    })
     onClose();
   }
 
@@ -73,50 +73,9 @@ const BoardContainer = () => {
       {state.data ? <Box h={'10rem'} display={'flex'} alignItems={'center'} onClick={onOpen} justifyContent={'center'} bgColor={'#091e4224'} borderRadius={'2xl'} _hover={{bgColor:'#091E424F'}}>
         <Text fontSize={'base'}>Create new board</Text>
       </Box> : null}
-      <ModalForm input={input} handleInput={handleInput} isOpen={isOpen} onClose={onClose} postBoard={postBoard} />
+      <ModalForm input={state.input} handleInput={handleInput} isOpen={isOpen} onClose={onClose} postBoard={addBoard} />
     </SimpleGrid>
   );
 };
 
 export default BoardContainer;
-
-const getBoards = async () => {
-  try {
-    const response = await axios.get(
-      `https://api.trello.com/1/members/me/boards?fields=name,id,prefs&key=${
-        key
-      }&token=${token}`
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "fetch": {
-      return {
-        ...state,
-        data: action.payload,
-        loading: false,
-      };
-    }
-    case "error": {
-      return {
-        data: undefined,
-        loading: false,
-        error: "Something went wrong",
-      };
-    }
-    case "post" :{ 
-      return {
-        data: [...state.data,action.payload],
-        loading:false,
-        error:false
-      }
-    }
-    default:
-      return state;
-  }
-};

@@ -6,7 +6,7 @@ const Card = ({id='',list='',name=''}) => {
   const {isOpen,onOpen,onClose} = useDisclosure();
   return (
     <>
-    <Flex h={'10'} borderRadius={'lg'} boxShadow="inset 0 0 1px rgba(0, 0, 0, 0.5)" bg={'#FFFFFF'} _hover={{border:'1px solid red'}}>
+    <Flex h={'10'} mb={'1'} borderRadius={'lg'} boxShadow="inset 0 0 1px rgba(0, 0, 0, 0.5)" bg={'#FFFFFF'} _hover={{border:'1px solid red'}}>
     <Flex onClick={onOpen}  justifyContent={'space-between'} width={'100%'} alignItems={'center'} h={'10'}  cursor={'pointer'} >
     <Text fontSize={'sm'} pl={'1rem'}> {name} </Text>
   </Flex>

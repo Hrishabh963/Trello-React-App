@@ -1,20 +1,15 @@
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
 import { Button, Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, CloseButton, Box} from '@chakra-ui/react'
-import axios from 'axios'
 import React, { useEffect, useReducer } from 'react'
-import CardsContainer from './CardsContainer'
+import CardsContainer from '../../Card/Components/CardsContainer'
 import CollapseText from './CollapseText'
+import { getCards, postCard, deleteCard } from '../Utils/ListApi'
+import { listReducer , listInitalState} from '../Utils/listHelper'
 
-const initalState = {
-  cards : [],
-  error : false,
-  loading : true,
-  showForm : false,
-  inputValue: ''
-}
 
 const List = ({name = '' , id=''}) => {
-  const [state, dispatcher] = useReducer(reducer, initalState);
+  const [state, dispatcher] = useReducer(listReducer, listInitalState);
+
   const toggleForm = ()=>{
     dispatcher({type :'showForm'})
   }
@@ -44,8 +39,13 @@ const List = ({name = '' , id=''}) => {
     postCard(state.inputValue,id)
     .then((data)=>{
       dispatcher({type:'post',payload:{id:data.id,name:data.name}});
+      dispatcher({type:'setInput',payload:''});
     })
-    dispatcher({type:'setInput',payload:''});
+    .catch((error)=>{
+      console.log(error);
+      dispatcher({type:'error'})
+    })
+    
   }
 
   useEffect(()=>{
@@ -82,74 +82,3 @@ const List = ({name = '' , id=''}) => {
 
 export default List
 
-const getCards = async (id)=>{
-try {
-    const response = await axios.get(`https://api.trello.com/1/lists/${id}/cards?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-    return  response.data;
-} catch (error) {
-    throw error;
-}
-}
-const postCard = async (name,id)=>{
-  try {
-    const response = await axios.post(`https://api.trello.com/1/cards?idList=${id}&name=${name}&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-const deleteCard = async (id)=>{
-  try {
-    const response = await axios.delete(`https://api.trello.com/1/cards/${id}?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-    return response.status;
-  } catch (error) {
-    throw error;
-  }
-}
-
-const reducer = (state,action)=>{
-  switch (action.type){
-    case "fetch":{
-      return{
-        ...state,
-        cards : action.payload,
-        error : false,
-        loading : false
-      }
-    }
-    case "error":{
-      return{
-        ...state,
-        error : true,
-        loading : false
-      }
-    }
-    case "post":{
-      return{
-        ...state,
-        cards:[...state.cards,action.payload]
-      }
-    }
-    case "deleteCard":{
-      return{
-        ...state,
-        cards:state.cards.filter((card)=>card.id!==action.payload)
-      }
-    }
-    case "showForm":{
-      return {
-        ...state,
-        showForm : !state.showForm
-      }
-    }
-    case "setInput":{
-      return{
-        ...state,
-        inputValue : action.payload
-      }
-    }
-    default:
-      return state;
-  }
-}

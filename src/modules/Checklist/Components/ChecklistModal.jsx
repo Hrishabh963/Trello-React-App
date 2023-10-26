@@ -1,19 +1,13 @@
 import { CalendarIcon } from '@chakra-ui/icons'
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text,Flex, Spacer } from '@chakra-ui/react'
 import React, { useEffect, useReducer } from 'react'
-import PopoverForm from '../PopoverForm'
-import axios from 'axios'
+import PopoverForm from './PopoverForm'
 import ChecklistContainer from './ChecklistContainer'
-
-const initalState = {
-    checkLists : [],
-    error : false,
-    loading : true,
-    inputValue: ''
-  }
+import { getChecklists,addChecklist,deleteChecklist } from '../Utils/checkListApi'
+import { checkListReducer, checkListinitalState } from '../Utils/checkListHelper'
 
 const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
-  const [state,dispatcher] = useReducer(reducer,initalState)
+  const [state,dispatcher] = useReducer(checkListReducer,checkListinitalState)
 
   const handleInput = (value)=>{
     dispatcher({type:'setInput',payload:value});    
@@ -86,70 +80,3 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
 }
 
 export default ChecklistModal
-
-const getChecklists = async (cardId)=>{
-    try {
-        const response = await axios.get(`https://api.trello.com/1/cards/${cardId}/checklists?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`)
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const addChecklist = async (cardId,name)=>{
-    try {
-        const response = await axios.post(`https://api.trello.com/1/checklists?idCard=${cardId}&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}&name=${name}`)
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const deleteChecklist = async (checkListId)=>{
-    try {
-        const response = await axios.delete(`https://api.trello.com/1/checklists/${checkListId}?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-        return response.status;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const reducer = (state,action)=>{
-    switch (action.type){
-      case "fetch":{
-        return{
-          ...state,
-          checkLists : action.payload,
-          error : false,
-          loading : false
-        }
-      }
-      case "error":{
-        return{
-          ...state,
-          error : true,
-          loading : false
-        }
-      }
-      case "post":{
-        return{
-          ...state,
-          checkLists:[...state.checkLists,action.payload]
-        }
-      }
-      case "delete":{
-        return{
-          ...state,
-          checkLists:state.checkLists.filter((checklist)=>checklist.id!==action.payload)
-        }
-      }
-      case "setInput":{
-        return{
-          ...state,
-          inputValue : action.payload
-        }
-      }
-      default:
-        return state;
-    }
-  }

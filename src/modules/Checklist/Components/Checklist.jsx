@@ -1,18 +1,10 @@
 import { CheckCircleIcon, DeleteIcon } from '@chakra-ui/icons'
-import { Button, Checkbox, CheckboxGroup, Flex, IconButton, Progress, Text, useDisclosure } from '@chakra-ui/react'
-import axios from 'axios'
+import { Button, Flex, IconButton, Progress, Text, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useReducer } from 'react'
 import Checkitem from './Checkitem'
 import CheckItemForm from './CheckItemForm'
-
-const initalState = {
-    checkItems : [],
-    percentage:0,
-    error : false,
-    loading : true,
-    inputValue: ''
-  }
-
+import { getCheckItems,postCheckItem,deleteCheckItem,updateCheckState } from '../Utils/checkItemApi'
+import { reducer,initalState } from '../Utils/checkItemsHelper'
 const Checklist = ({id='',name='',cardId=''}) => {
   const [state,dispatcher] = useReducer(reducer,initalState);
   const {isOpen,onToggle} = useDisclosure();
@@ -27,6 +19,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
     .then((data)=>{
         dispatcher({type:'post',payload:data});
         dispatcher({type:'setInput',payload:''});
+        dispatcher({type:'setPercentage'})
     })
     .catch((error)=>{
         console.log(error);
@@ -35,7 +28,6 @@ const Checklist = ({id='',name='',cardId=''}) => {
   }
 
   const handleCheckState = (check,checkItemId)=>{
-    console.log(check,checkItemId);
     dispatcher({type:'changeState',payload:{check : check,id : checkItemId}});
     dispatcher({type:'setPercentage'});
     updateCheckState(cardId,id,checkItemId,state.checkItems,check)
@@ -70,6 +62,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
         dispatcher({type:'error'});
     })
   },[])
+
   return (
     <Flex direction={'column'} py={'3'} onClick={handleDelete}>
         <Flex width={'100%'}><CheckCircleIcon mt={'1'} /><Text fontSize={'lg'} fontWeight={'bold'} pl={'2'}>{name}</Text><IconButton id={id} className='delete_checklist' h={'5'} mt={'1'} ml={'3'} _hover={{bgColor:'#FFFFFF',color:'red'}} variant={'ghost'} icon={<DeleteIcon />} /></Flex>
@@ -87,115 +80,3 @@ const Checklist = ({id='',name='',cardId=''}) => {
 
 export default Checklist
 
-const getCheckItems = async (checkListId)=>{
-    try {
-        const response = await axios.get(`https://api.trello.com/1/checklists/${checkListId}/checkItems?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`)
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const postCheckItem = async (checkListId,name)=>{
-    try {
-        const response = await axios.post(`https://api.trello.com/1/checklists/${checkListId}/checkItems?name=${name}&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const deleteCheckItem = async (checkListId,checkItemId)=>{
-    try {
-        const response = await axios.delete(`https://api.trello.com/1/checklists/${checkListId}/checkItems/${checkItemId}?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-        return response.status;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const updateCheckState = async (cardId,checkListId,checkItemId,checkItems,checked)=>{
-    try {
-        const check = checked ? "complete" : "incomplete";
-        let obj =  checkItems.find(checkItem=>checkItem.id===checkItemId);
-        obj = {...obj,state:check};
-        const response = await axios.put(`https://api.trello.com/1/cards/${cardId}/checklist/${checkListId}/checkItem/${checkItemId}?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`,obj);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-const calculatePercentage = (checkItems)=>{
-    const total = checkItems.length;
-    if(total === 0)return 0;
-    let checked = 0;
-    for (const checkItem of checkItems) {
-        if(checkItem.state === 'complete')
-        checked++;
-    }
-    const percentage = ((checked/total)*100).toFixed(0);
-    return percentage;
-  }
-
-const changeState = (checked,id,checkItems)=>{
-    const status = checked ? "complete" : "incomplete";
-    const UpdatedData = checkItems.map((checkItem)=>{
-        if(checkItem.id === id){
-            return {...checkItem,state : status}
-        }
-        else return checkItem;
-    })
-    return UpdatedData;
-}
-const reducer = (state,action)=>{
-    switch (action.type){
-      case "fetch":{
-        return{
-          ...state,
-          checkItems : action.payload,
-          error : false,
-          loading : false
-        }
-      }
-      case "error":{
-        return{
-          ...state,
-          error : true,
-          loading : false
-        }
-      }
-      case "post":{
-        return{
-          ...state,
-          checkItems:[...state.checkItems,action.payload]
-        }
-      }
-      case "delete":{
-        return{
-          ...state,
-          checkItems:state.checkItems.filter((checkItem)=>checkItem.id!==action.payload)
-        }
-      }
-      case "setInput":{
-        return{
-          ...state,
-          inputValue : action.payload
-        }
-      }
-      case "setPercentage":{
-        return{
-            ...state,
-            percentage: calculatePercentage(state.checkItems)
-        }
-      }
-      case "changeState" : {
-        return{
-            ...state,
-            checkItems:changeState(action.payload.check,action.payload.id,state.checkItems)
-        }
-      }
-      default:
-        return state;
-    }
-  }

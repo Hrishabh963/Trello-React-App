@@ -6,29 +6,24 @@ import {
   useDisclosure,
   Flex,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import List from "./List";
 import CollapseForm from "./CollapseForm";
-
-const initalState = {
-  data: undefined,
-  error: false,
-  loading: true,
-  boardColor:undefined,
-  imgUrl:undefined,
-  inputValue:''
-};
+import { getListData,postListData,getParentData,deleteList } from "../Utils/ListApi";
+import { listContainerReducer,listContainerInitalState } from "../Utils/listHelper";
 
 const ListContainer = () => { 
   //Getting board id
   const { id } = useParams();
+  //Using useReducer to handle API fetching and state change 
+  const [state, dispatcher] = useReducer(listContainerReducer, listContainerInitalState);
+  const { isOpen, onToggle } = useDisclosure();
 
   //Function to add list to the board
   const addList = ()=>{
     if(state.inputValue === '') return;
-    postData(state.inputValue,id)
+    postListData(state.inputValue,id)
     .then((data)=>{
       dispatcher({type:'post',payload:data})
     })
@@ -58,10 +53,6 @@ const ListContainer = () => {
       dispatcher({type:'error'})
     })
   }
-
-  //Using useReducer to handle API fetching
-  const [state, dispatcher] = useReducer(reducer, initalState);
-  const { isOpen, onToggle } = useDisclosure();
 
   //Fetching data to display
   useEffect(() => {
@@ -121,100 +112,4 @@ const ListContainer = () => {
 };
 
 export default ListContainer;
-
-//Function to post list
-const postData = async (name,id)=>{
-  if(name === '')return;
-  try {
-    const response = await axios.post(`https://api.trello.com/1/lists?name=${name}&idBoard=${id}&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-//Function to get all list
-const getListData = async (id) => {
-  try {
-    const response = await axios.get(
-      `https://api.trello.com/1/boards/${id}/lists?key=${
-        import.meta.env.VITE_API_KEY
-      }&token=${import.meta.env.VITE_API_TOKEN}`
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-///Function to get parent board's color/bgImage
-const getParentData = async (id) => {
-  try {
-    const response = await axios.get(`https://api.trello.com/1/boards/${id}?fields=name,id,prefs&key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}`);
-    return response.data.prefs;
-  } catch (error) {
-    throw error;
-  }
-}
-
-const deleteList = async (listId)=>{
-  try {
-    const response = await axios.put(`https://api.trello.com/1/lists/${listId}/closed?key=${import.meta.env.VITE_API_KEY}&token=${import.meta.env.VITE_API_TOKEN}&value=true`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-//Reducer function to be passed in useReducer
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "fetch": {
-      return {
-        ...state,
-        data: action.payload,
-        error: false,
-        loading: false,
-      };
-    }
-    case "error": {
-      return {
-        ...state,
-        data: undefined,
-        error: true,
-        loading: false,
-      };
-    }
-    case "post": {
-      return {
-        ...state,
-        data : [...state.data,action.payload],
-        error:false,
-        loading:false
-      }
-    }
-    case "delete":{
-      return {
-        ...state,
-        data: state.data.filter(list=> list.id !== action.payload)
-      }
-    }
-    case "setColor":{
-      return {
-        ...state,
-        boardColor:action.payload.backgroundColor,
-        imgUrl:action.payload.backgroundImage
-      }
-    }
-    case "setInput":{
-      return {
-        ...state,
-        inputValue:action.payload
-      }
-    }
-    default:
-      return state;
-  }
-};
 

@@ -1,8 +1,9 @@
 import { Modal,ModalBody,ModalOverlay,ModalHeader,ModalCloseButton,ModalContent,Flex,Button,Input } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 const ModalForm = ({isOpen,onClose,postBoard,handleInput}) => {
   const [input,setinput] = useState('');
+  const inRef = useRef();
   const handleInputChange = (value)=>{
     setinput(value);
     handleInput(value);
@@ -11,7 +12,9 @@ const ModalForm = ({isOpen,onClose,postBoard,handleInput}) => {
     <Modal
         isCentered
         isOpen={isOpen}
-        onClose={onClose}>
+        onClose={onClose}
+        initialFocusRef={inRef}
+        >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create New Board</ModalHeader>
@@ -19,7 +22,7 @@ const ModalForm = ({isOpen,onClose,postBoard,handleInput}) => {
           <ModalBody display={'flex'} flexDirection={'column'}>
             <label>
               Board Name:
-              <Input value={input} onChange={(event)=>handleInputChange(event.target.value)} focusBorderColor="blue.400" errorBorderColor="red.300" isInvalid mt={'1'} isRequired placeholder="Enter Board Name" />
+              <Input ref={inRef} value={input} onChange={(event)=>handleInputChange(event.target.value)} focusBorderColor="blue.400" errorBorderColor="red.300" isInvalid mt={'1'} isRequired placeholder="Enter Board Name" />
             </label>
             <Flex py={'2rem'} w={'100%'}>
               <Button colorScheme="blue" onClick={postBoard}>Create </Button>
