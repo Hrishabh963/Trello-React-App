@@ -55,9 +55,9 @@ const BoardContainer = () => {
     <SimpleGrid
       py={"4rem"}
       px={"3rem"}
-      minChildWidth='20rem'
       spacing='60px'
       onClick={handleNavigate}
+      columns={{base:'1',md:'2',lg:'4'}}
     >
       {state.loading ? <Loader /> : null}
       {state.data ? (
@@ -73,7 +73,7 @@ const BoardContainer = () => {
           );
         })
       ) : null}
-      {!state.error && !state.loading &&state.data ? <Box h={'10rem'} display={'flex'} alignItems={'center'} onClick={onOpen} justifyContent={'center'} bgColor={'#091e4224'} borderRadius={'2xl'} _hover={{bgColor:'#091E424F'}}>
+      {!state.error && !state.loading &&state.data ? <Box h={'10rem'} display={'flex'} alignItems={{base:'flex-start',md:'center'}} p={{base:'3',md:'0'}} onClick={onOpen} justifyContent={'center'} bgColor={'#091e4224'} borderRadius={'2xl'} _hover={{bgColor:'#091E424F'}}>
         <Text fontSize={'base'}>Create new board</Text>
       </Box> : null}
       <ModalForm input={state.input} handleInput={handleInput} isOpen={isOpen} onClose={onClose} postBoard={addBoard} />

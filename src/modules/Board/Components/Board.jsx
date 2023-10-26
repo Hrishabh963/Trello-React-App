@@ -19,8 +19,8 @@ const Board = ({ id = "", color = undefined, url = undefined, name = "" }) => {
       <Text
         textColor={"#fff"}
         p={"1rem"}
-        fontSize={"lg"}
-        fontWeight={"extrabold"}
+        fontSize={{base:"md",md:"lg"}}
+        fontWeight={{base:"normal",md:"bold"}}
       >
         {name}
       </Text>

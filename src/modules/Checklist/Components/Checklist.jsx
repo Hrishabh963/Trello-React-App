@@ -73,7 +73,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
         {state.checkItems.map((checkitem)=>{
             return <Checkitem handleCheckState={handleCheckState} key={checkitem.id} checked={checkitem.state === 'complete' ? true : false} name={checkitem.name} id={checkitem.id} />
         })}
-        <Flex pt={'2'} direction={'column'} w={'20%'}>
+        <Flex pt={'2'} direction={'column'} w={{base:'30%',md:'20%'}}>
         <Button display={isOpen ? 'none' : 'flex'} colorScheme='gray' fontSize={'sm'} onClick={onToggle} >Add an item</Button>
         </Flex>
         <CheckItemForm handleInputChange={handleInputChange} addCheckItem={addCheckItem} isOpen={isOpen} onToggle={onToggle} />

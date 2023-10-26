@@ -1,6 +1,6 @@
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
-import { Button, Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, CloseButton, Box, Spinner} from '@chakra-ui/react'
-import React, { useEffect, useReducer } from 'react'
+import { Button, Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, Spinner, useOutsideClick} from '@chakra-ui/react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import CardsContainer from '../../Card/Components/CardsContainer'
 import CollapseText from './CollapseText'
 import { getCards, postCard, deleteCard } from '../Utils/ListApi'
@@ -11,7 +11,15 @@ import { useErrorBoundary } from 'react-error-boundary'
 const List = ({name = '' , id=''}) => {
   const [state, dispatcher] = useReducer(listReducer, listInitalState);
   const {showBoundary} = useErrorBoundary();
-
+  const ref = useRef()
+  useOutsideClick({
+    ref:ref,
+    handler : ()=>{
+      if(state.showForm){
+        dispatcher({type:'showForm'})
+      }
+    }
+  })
   const toggleForm = ()=>{
     dispatcher({type :'showForm'})
   }
@@ -76,7 +84,7 @@ const List = ({name = '' , id=''}) => {
       <CardFooter mt={'-10'}>
         <Flex direction={'column'} w={'100%'}>
         <Button display={state.showForm ? 'none' : 'flex'}  cursor={'pointer' } onClick={toggleForm} _hover={{backgroundColor:'#091E4224'}} w={'50%'} fontSize={'0.8rem'}><AddIcon /><Text pl={'0.7rem'}>Add new card</Text></Button>
-          {state.showForm ? <CollapseText addCard={addCard} handleInputChange={handleInputChange} toggleForm={toggleForm} /> : null}
+          {state.showForm ? <CollapseText closeOutsideRef={ref} addCard={addCard} handleInputChange={handleInputChange} toggleForm={toggleForm} /> : null}
         </Flex>
       </CardFooter>
     </Card>

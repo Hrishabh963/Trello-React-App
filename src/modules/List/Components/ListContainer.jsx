@@ -5,8 +5,9 @@ import {
   Card,
   useDisclosure,
   Flex,
+  useOutsideClick,
 } from "@chakra-ui/react";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { useParams } from "react-router-dom";
 import List from "./List";
 import CollapseForm from "./CollapseForm";
@@ -22,6 +23,15 @@ const ListContainer = () => {
   const [state, dispatcher] = useReducer(listContainerReducer, listContainerInitalState);
   const { isOpen, onToggle } = useDisclosure();
   const {showBoundary} = useErrorBoundary();
+  const ref = useRef();
+  useOutsideClick({
+    ref: ref,
+    handler: () => {
+      if(isOpen){
+        onToggle();
+      }
+    }
+  })
   //Function to add list to the board
   const addList = ()=>{
     if(state.inputValue === '') return;
@@ -107,7 +117,7 @@ const ListContainer = () => {
         >
           <CardHeader onClick={onToggle}>Add another list...</CardHeader>
         </Card> : null}
-        {isOpen ? <CollapseForm onToggle={onToggle} addList={addList} handleInputChange={handleInputChange} /> : null}
+        {isOpen ? <CollapseForm clickOutRef={ref} onToggle={onToggle} addList={addList} handleInputChange={handleInputChange} /> : null}
       </Flex>
     </Box>
   );
