@@ -30,7 +30,7 @@ This is a Trello clone React application built using React Router DOM for routin
    ```bash
    npm install
    ```
-4. Set environment variables:
+4. Create a .env file in the project root and configure the required environment variables:
 
     ```bash
     VITE_API_KEY=your_api_key
