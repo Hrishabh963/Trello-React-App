@@ -15,6 +15,7 @@ const Board = ({ id = "", color = undefined, url = undefined, name = "" }) => {
       backgroundSize={"cover"}
       backgroundImage={url}
       sx={style}
+      cursor={'pointer'}
     >
       <Text
         textColor={"#fff"}
