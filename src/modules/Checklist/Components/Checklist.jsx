@@ -44,6 +44,7 @@ const Checklist = ({id='',name='',cardId=''}) => {
     .then((status)=>{
         if(status === 200){
             dispatcher({type:'delete',payload:triggerId});
+            dispatcher({type:'setPercentage'})
         }
     })
     .catch((error)=>{

@@ -28,8 +28,7 @@ const BoardContainer = () => {
     if(state.input === '') return;
     postBoard(state.input)
     .then((data)=>{
-      console.log(data);
-      dispatcher({type:'post',payload:data});Set
+      dispatcher({type:'post',payload:data});
       dispatcher({type:'setInput',payload:''});
     })
     .catch((error)=>{

@@ -1,5 +1,5 @@
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
-import { Button, Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, CloseButton, Box} from '@chakra-ui/react'
+import { Button, Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, CloseButton, Box, Spinner} from '@chakra-ui/react'
 import React, { useEffect, useReducer } from 'react'
 import CardsContainer from '../../Card/Components/CardsContainer'
 import CollapseText from './CollapseText'
@@ -70,7 +70,8 @@ const List = ({name = '' , id=''}) => {
         </Flex>
       </CardHeader>
       <CardBody mt={'-10'}>
-        <CardsContainer list={name} cards={state.cards} />
+        {state.loading ? <Spinner thickness='3px' color='darkGray' emptyColor='gray.200' /> : null}
+        {!state.loading ? <CardsContainer list={name} cards={state.cards} /> : null}
       </CardBody>
       <CardFooter mt={'-10'}>
         <Flex direction={'column'} w={'100%'}>
