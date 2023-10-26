@@ -41,7 +41,7 @@ const ListContainer = () => {
     })
     .catch((error)=>{
       showBoundary(error);
-      dispatcher({type:'error'})
+      
     })
     dispatcher({type:'setInput',payload:''})
   }
@@ -62,7 +62,6 @@ const ListContainer = () => {
     })
     .catch((error)=>{
       showBoundary(error);
-      dispatcher({type:'error'})
     })
   }
 
@@ -74,7 +73,6 @@ const ListContainer = () => {
       })
       .catch((error) => {
         showBoundary(error);
-        dispatcher({ type: 'error' });
       });
     getParentData(id)
     .then((data)=>{
@@ -82,7 +80,6 @@ const ListContainer = () => {
     })
     .catch((error)=>{
       showBoundary(error);
-      dispatcher({ type: 'error' });
     })
   }, []);
 
@@ -101,13 +98,13 @@ const ListContainer = () => {
 
     >
       <Flex minW={"fit-content"} spacing={"10"} onClick={handleDelete} gap={'2rem'}>
-        {!state.error && state.loading ? <Loader />: null}
-        {!state.error && !state.loading
+        {state.loading ? <Loader />: null}
+        {!state.loading
           ? state.data.map((list) => {
               return <List key={list.id} id={list.id} name={list.name} />;
             })
           : null}
-        {!state.error && !state.loading ? <Card
+        {!state.loading ? <Card
           display={isOpen?'none':'flex'}
           h={"fit-content"}
           w={"20rem"}

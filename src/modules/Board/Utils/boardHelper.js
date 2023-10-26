@@ -15,15 +15,6 @@ export const reducer = (state, action) => {
                     loading: false,
                 };
             }
-        case "error":
-            {
-                return {
-                    ...state,
-                    data: undefined,
-                    loading: false,
-                    error: true,
-                };
-            }
         case "post":
             {
                 return {

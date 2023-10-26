@@ -40,7 +40,6 @@ const List = ({name = '' , id=''}) => {
     })
     .catch(error=>{
       showBoundary(error)
-      dispatcher({type:'error'});
     })
   }
 
@@ -53,7 +52,6 @@ const List = ({name = '' , id=''}) => {
     })
     .catch((error)=>{
       showBoundary(error);
-      dispatcher({type:'error'})
     })
     
   }
@@ -65,7 +63,6 @@ const List = ({name = '' , id=''}) => {
     })
     .catch((error)=>{
       showBoundary(error);
-      dispatcher({type : 'error'})
     })
   },[])
 

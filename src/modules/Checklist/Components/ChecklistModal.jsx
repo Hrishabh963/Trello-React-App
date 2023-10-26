@@ -24,7 +24,6 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
     })
     .catch((error)=>{
         showBoundary(error);
-        dispatcher({type:'error'});
     })
   }
 
@@ -40,7 +39,6 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
     })
     .catch(error=>{
         showBoundary(error);
-        dispatcher({type:'error'});
     })
   }
 
@@ -52,7 +50,6 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
     })
     .catch((error)=>{
         showBoundary(error);
-        dispatcher({type:'error'});
     })
   },[])
   
@@ -67,7 +64,7 @@ const ChecklistModal = ({isOpen,onClose,cardName,listName,id}) => {
         <ModalCloseButton />
         <ModalBody onClick={handleDelete}>
         <Flex width={'100%'} direction={{base:'column',md:'row'}}>
-            <ChecklistContainer cardId={id} checkLists={state.checkLists} />
+            {!state.loading ? <ChecklistContainer cardId={id} checkLists={state.checkLists} /> : null}
          <Flex direction={'column'} basis={'15%'} mt={{base:'1rem',md:'0'}}>
           <Divider display={{base:'inline-block',md:'none'}} border={'1px solid black'} />
             <Text fontWeight={'bold'} pl={'2'} color={'#44546f'} fontSize={'sm'}>Add to card</Text>

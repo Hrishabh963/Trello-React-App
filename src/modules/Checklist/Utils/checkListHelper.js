@@ -17,14 +17,6 @@ export const checkListReducer = (state, action) => {
                     loading: false
                 }
             }
-        case "error":
-            {
-                return {
-                    ...state,
-                    error: true,
-                    loading: false
-                }
-            }
         case "post":
             {
                 return {

@@ -1,6 +1,5 @@
 export const listInitalState = {
     cards: [],
-    error: false,
     loading: true,
     showForm: false,
     inputValue: ''
@@ -8,7 +7,6 @@ export const listInitalState = {
 
 export const listContainerInitalState = {
     data: [],
-    error: false,
     loading: true,
     boardColor: undefined,
     imgUrl: undefined,
@@ -23,14 +21,6 @@ export const listReducer = (state, action) => {
                     ...state,
                     cards: action.payload,
                     error: false,
-                    loading: false
-                }
-            }
-        case "error":
-            {
-                return {
-                    ...state,
-                    error: true,
                     loading: false
                 }
             }
@@ -76,15 +66,6 @@ export const listContainerReducer = (state, action) => {
                     ...state,
                     data: action.payload,
                     error: false,
-                    loading: false,
-                };
-            }
-        case "error":
-            {
-                return {
-                    ...state,
-                    data: undefined,
-                    error: true,
                     loading: false,
                 };
             }

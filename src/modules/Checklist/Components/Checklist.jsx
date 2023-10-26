@@ -1,6 +1,6 @@
 import { CheckCircleIcon, DeleteIcon } from '@chakra-ui/icons'
-import { Button, Flex, IconButton, Progress, Text, useDisclosure } from '@chakra-ui/react'
-import React, { useEffect, useReducer } from 'react'
+import { Button, Flex, IconButton, Progress, Text, useDisclosure, useOutsideClick } from '@chakra-ui/react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import Checkitem from './Checkitem'
 import CheckItemForm from './CheckItemForm'
 import { getCheckItems,postCheckItem,deleteCheckItem,updateCheckState } from '../Utils/checkItemApi'
@@ -10,7 +10,15 @@ const Checklist = ({id='',name='',cardId=''}) => {
   const [state,dispatcher] = useReducer(reducer,initalState);
   const {isOpen,onToggle} = useDisclosure();
   const {showBoundary} = useErrorBoundary();
-
+  const ref = useRef();
+  useOutsideClick({
+    ref:ref,
+    handler:()=>{
+      if(isOpen){
+        onToggle()
+    }
+    }
+  })
   const handleInputChange = (value)=>{
     dispatcher({type:'setInput',payload:value});
   }
@@ -25,7 +33,6 @@ const Checklist = ({id='',name='',cardId=''}) => {
     })
     .catch((error)=>{
         showBoundary(error);
-        dispatcher({type:'error'});
     })
   }
 
@@ -49,7 +56,6 @@ const Checklist = ({id='',name='',cardId=''}) => {
     })
     .catch((error)=>{
         showBoundary(error);
-        dispatcher({type:'error'})
     })
   }
 
@@ -62,21 +68,20 @@ const Checklist = ({id='',name='',cardId=''}) => {
     })
     .catch((error)=>{
         showBoundary(error);
-        dispatcher({type:'error'});
     })
   },[])
 
   return (
     <Flex direction={'column'} py={'3'} onClick={handleDelete}>
         <Flex width={'100%'}><CheckCircleIcon mt={'1'} /><Text fontSize={'lg'} fontWeight={'bold'} pl={'2'}>{name}</Text><IconButton id={id} className='delete_checklist' h={'5'} mt={'1'} ml={'3'} _hover={{bgColor:'#FFFFFF',color:'red'}} variant={'ghost'} icon={<DeleteIcon />} /></Flex>
-        <Flex alignItems={'center'}><Text pr={'2'}>{state.percentage}%</Text><Progress size={'sm'} w={'90%'} colorScheme={'green'} value={state.percentage} /></Flex>
-        {state.checkItems.map((checkitem)=>{
+        {!state.loading && state.checkItems.length > 0 ? <Flex alignItems={'center'}><Text pr={'2'}>{state.percentage}%</Text><Progress size={'sm'} w={'90%'} colorScheme={'green'} value={state.percentage} /></Flex> : null}
+        {!state.loading ? state.checkItems.map((checkitem)=>{
             return <Checkitem handleCheckState={handleCheckState} key={checkitem.id} checked={checkitem.state === 'complete' ? true : false} name={checkitem.name} id={checkitem.id} />
-        })}
+        }):null}
         <Flex pt={'2'} direction={'column'} w={{base:'30%',md:'20%'}}>
-        <Button display={isOpen ? 'none' : 'flex'} colorScheme='gray' fontSize={'sm'} onClick={onToggle} >Add an item</Button>
+          {!state.loading ?  <Button display={isOpen ? 'none' : 'flex'} colorScheme='gray' fontSize={'sm'} onClick={onToggle} >Add an item</Button> : null}
         </Flex>
-        <CheckItemForm handleInputChange={handleInputChange} addCheckItem={addCheckItem} isOpen={isOpen} onToggle={onToggle} />
+        <CheckItemForm clickOutsideRef={ref} handleInputChange={handleInputChange} addCheckItem={addCheckItem} isOpen={isOpen} onToggle={onToggle} />
     </Flex>
   )
 }

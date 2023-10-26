@@ -1,7 +1,7 @@
 import { Box, Button, CloseButton, Collapse, Flex, Textarea } from '@chakra-ui/react'
 import React, { useEffect,useRef, useState } from 'react'
 
-const CheckItemForm = ({isOpen=false,onToggle,addCheckItem,handleInputChange}) => {
+const CheckItemForm = ({isOpen=false,onToggle,addCheckItem,handleInputChange,clickOutsideRef}) => {
   const inpRef = useRef();
   const [input,setInput] = useState('');
   const handleChange = (event)=>{
@@ -18,7 +18,7 @@ const CheckItemForm = ({isOpen=false,onToggle,addCheckItem,handleInputChange}) =
     inpRef.current.focus();
   },[isOpen])
   return (
-    <Box w={'40%'}>
+    <Box w={'40%'} ref={clickOutsideRef}>
     <Collapse in={isOpen}>
       <Flex direction={'column'} w={'100%'} pt={'2'}>
         <Textarea value={input} onChange={handleChange} ref={inpRef} resize={'none'} placeholder='Add checkitem...' />
