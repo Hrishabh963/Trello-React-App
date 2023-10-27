@@ -1,7 +1,6 @@
 import {
   Box,
   CardHeader,
-  Heading,
   Card,
   useDisclosure,
   Flex,
@@ -15,12 +14,14 @@ import { getListData,postListData,getParentData,deleteList } from "../Utils/List
 import { listContainerReducer,listContainerInitalState } from "../Utils/listHelper";
 import Loader from "../../Common/Components/Loader";
 import { useErrorBoundary } from "react-error-boundary";
-
+import {useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 const ListContainer = () => { 
   //Getting board id
   const { id } = useParams();
-  //Using useReducer to handle API fetching and state change 
-  const [state, dispatch] = useReducer(listContainerReducer, listContainerInitalState);
+
+  const {data,loading} = useSelector((state)=> state.lists)
+  const dispatch = useDispatch()
   const { isOpen, onToggle } = useDisclosure();
   const {showBoundary} = useErrorBoundary();
   const ref = useRef();

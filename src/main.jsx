@@ -7,9 +7,10 @@ import { theme } from '/src/modules/Chakra/Theme.js'
 import '@fontsource/ubuntu'
 import { ErrorBoundary } from 'react-error-boundary'
 import Fallback from './modules/Common/Components/Fallback.jsx'
-import { store } from './store/store.js'
 import { Provider } from 'react-redux'
+import { store } from './store/store.js'
 const Theme = extendTheme(theme);
+
 const handleError = (error,errorInfo)=>{
   console.error(error.message,errorInfo);
 }

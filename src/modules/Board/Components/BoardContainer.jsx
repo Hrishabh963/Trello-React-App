@@ -1,46 +1,31 @@
-import { Box, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
+import { SimpleGrid} from "@chakra-ui/react";
 import { useEffect} from "react";
 import Board from "./Board";
-import { useNavigate } from "react-router-dom";
 import ModalForm from "./ModalForm";
-import { getBoards,postBoard } from "./BoardApi";
+import { getBoards,postBoard } from "../Utils/boardApi";
 import Loader from "../../Common/Components/Loader";
 import { useErrorBoundary } from "react-error-boundary";
 import { useDispatch,useSelector } from "react-redux";
-import {action} from '../../../store/features/boardSlice'
+import { actions } from "../../../store/features/boardSlice";
 
 const BoardContainer = () => {
   //Error boundary custom hook
   const { showBoundary } = useErrorBoundary();
   
   //Custom hook provided by chakra to manage modals/popovers
-  const {isOpen,onOpen,onClose} = useDisclosure();
-  const navigate = useNavigate();
-  const {data,loading,input} = useSelector((state)=> state.board);   //Using useSelector to get my current state
+  const {data,loading} = useSelector((state)=> state.board);   //Using useSelector to get my current state
   const dispatch = useDispatch();   //Dispatches types to relevent reducers
 
-  //function to handle the navigation
-  const handleNavigate = (event) => {
-    const trigger = event.target.closest(".boards");
-    if (!trigger) return;
-    navigate(`/board/${trigger.id}`);
-  };
-
-  const handleInput = (value)=>{
-    dispatch(action.setInput(value));
-  }
-
-  const addBoard = ()=>{
+  //Function to add new board
+  const addBoard = (input)=>{
     if(input === '') return;
     postBoard(input)
     .then((data)=>{
-      dispatch(action.postBoard(data));
-      dispatch(action.setInput(''));
+      dispatch(actions.postBoard(data));
     })
     .catch((error)=>{
       showBoundary(error);
     })
-    onClose();
   }
 
 
@@ -48,7 +33,7 @@ const BoardContainer = () => {
   useEffect(()=>{
     getBoards(showBoundary)
     .then((data)=>{
-        dispatch(action.getAllBoards(data));
+        dispatch(actions.getBoards(data));
     })
     .catch((error)=>{
       showBoundary(error);
@@ -60,11 +45,10 @@ const BoardContainer = () => {
       py={"4rem"}
       px={"3rem"}
       spacing='60px'
-      onClick={handleNavigate}
       columns={{base:'1',md:'2',lg:'4'}}
     >
       {loading ? <Loader /> : null}
-      {data ? (
+      {
         data.map((board) => {
           return (
             <Board
@@ -76,11 +60,8 @@ const BoardContainer = () => {
             />
           );
         })
-      ) : null}
-      {!loading && data ? <Box h={'10rem'} display={'flex'} alignItems={{base:'flex-start',md:'center'}} p={{base:'3',md:'0'}} onClick={onOpen} justifyContent={'center'} bgColor={'#091e4224'} borderRadius={'2xl'} _hover={{bgColor:'#091E424F'}}>
-        <Text fontSize={'base'}>Create new board</Text>
-      </Box> : null}
-      <ModalForm input={input} handleInput={handleInput} isOpen={isOpen} onClose={onClose} postBoard={addBoard} />
+      }
+      {!loading ? <ModalForm postBoard={addBoard} /> : null}
     </SimpleGrid>
   );
 };

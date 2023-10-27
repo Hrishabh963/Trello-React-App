@@ -1,5 +1,6 @@
 import { Box, Text } from "@chakra-ui/react";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Board = ({ id = "", color = undefined, url = undefined, name = "" }) => {
   const style = {
@@ -16,6 +17,8 @@ const Board = ({ id = "", color = undefined, url = undefined, name = "" }) => {
       backgroundImage={url}
       sx={style}
       cursor={'pointer'}
+      as={Link}
+      to={`/board/${id}`}
     >
       <Text
         textColor={"#fff"}
