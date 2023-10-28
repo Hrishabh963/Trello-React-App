@@ -5,6 +5,7 @@ const ModalForm = ({postBoard}) => {
   const [input,setinput] = useState('');
   const {isOpen,onOpen,onClose} = useDisclosure();
   const inRef = useRef();
+
   const handleInputChange = (value)=>{
     setinput(value);
   }

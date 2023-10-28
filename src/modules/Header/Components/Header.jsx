@@ -1,5 +1,6 @@
 import { Flex, Image, Button, Divider } from "@chakra-ui/react";
 import React from "react";
+import { useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const Header = () => {
