@@ -1,9 +1,10 @@
-import { Button, CloseButton, Flex, Textarea } from '@chakra-ui/react'
+import { AddIcon } from '@chakra-ui/icons'
+import { Button, CloseButton, Flex, Textarea, useDisclosure,Text } from '@chakra-ui/react'
 import React, { useEffect, useRef, useState } from 'react'
 
-const CollapseText = ({toggleForm,handleInputChange,addCard,closeOutsideRef}) => {
+const CollapseText = ({handleInputChange,addCard,closeOutsideRef}) => {
   const [input,setInput] = useState('');
-  const inputRef = useRef();
+  const {isOpen,onToggle} = useDisclosure();
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
@@ -13,16 +14,17 @@ const CollapseText = ({toggleForm,handleInputChange,addCard,closeOutsideRef}) =>
     addCard();
     setInput('');
   }
-  useEffect(()=>{
-    inputRef.current.focus();
-  },[])
+
   return (
-    <Flex ref={closeOutsideRef} direction={'column'}>
-      <Textarea ref={inputRef} value={input} onChange={handleChange} resize={'none'} placeholder='Enter a title for this card...' boxShadow="inset 0 0 1px rgba(0, 0, 0, 0.5)" backgroundColor={'#FFFFFF'} />
+    <>
+    <Button display={isOpen ? 'none' : 'flex'}  cursor={'pointer' } onClick={onToggle} _hover={{backgroundColor:'#091E4224'}} w={'50%'} fontSize={'0.8rem'}><AddIcon /><Text pl={'0.7rem'}>Add new card</Text></Button>
+    {isOpen ? <Flex ref={closeOutsideRef} direction={'column'}>
+      <Textarea autoFocus={true} value={input} onChange={handleChange} resize={'none'} placeholder='Enter a title for this card...' boxShadow="inset 0 0 1px rgba(0, 0, 0, 0.5)" backgroundColor={'#FFFFFF'} />
       <Flex pt={'3'} w={'70%'} >
-        <Button h={'8'} rounded={'md'} onClick={handleClick} colorScheme='blue' >Add card</Button> <CloseButton onClick={toggleForm} />
+        <Button h={'8'} rounded={'md'} onClick={handleClick} colorScheme='blue' >Add card</Button> <CloseButton onClick={onToggle} />
       </Flex>
-    </Flex>
+    </Flex> : null}
+    </>
   )
 }
 

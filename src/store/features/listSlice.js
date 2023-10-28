@@ -19,7 +19,7 @@ const listSlice = createSlice({
             state.data.push(action.payload)
         },
         deleteList: (state, action) => {
-            state.data.filter((list) => list.id !== action.payload.id)
+            state.data = state.data.filter((list) => list.id !== action.payload)
         },
         setBackground: (state, action) => {
             state.bgColor = action.payload.backgroundColor;

@@ -1,10 +1,6 @@
 import {
   Box,
-  CardHeader,
-  Card,
-  useDisclosure,
   Flex,
-  useOutsideClick,
 } from "@chakra-ui/react";
 import { useEffect, useReducer, useRef } from "react";
 import { useParams } from "react-router-dom";
@@ -20,21 +16,12 @@ import {actions} from '../../../store/features/listSlice';
 const ListContainer = () => { 
   //Getting board id
   const { id } = useParams();
-  const {data,loading,bgColor,bgImg} = useSelector((state)=> state.lists)
-  const boardColor = bgColor ? bgColor : '';
-  const imgUrl =bgImg ? bgImg : '';
-  const dispatch = useDispatch()
-  const { isOpen, onToggle } = useDisclosure();
-  const {showBoundary} = useErrorBoundary();
-  const ref = useRef();
-  useOutsideClick({
-    ref: ref,
-    handler: () => {
-      if(isOpen){
-        onToggle();
-      }
-    }
-  })
+  const {data,loading,bgColor,bgImg} = useSelector((state)=> state.lists)  //Loading lists data from store
+  const boardColor = bgColor ? bgColor : '';  //Defining color
+  const imgUrl =bgImg ? bgImg : '';           //Defining img
+  const dispatch = useDispatch()               
+  const {showBoundary} = useErrorBoundary();   
+
   //Function to add list to the board
   const addList = (input)=>{
     if(input === '') return;
@@ -47,21 +34,17 @@ const ListContainer = () => {
     })
   }
 
-  //Function to handle the change in input field
 
   //Function to delete list from board
-  // const handleDelete = (event)=>{
-  //   const trigger = event.target.closest('.delete_list');
-  //   if(!trigger) return;
-  //   const listId = trigger.id;
-  //   deleteList(listId)
-  //   .then((data)=>{
-  //     dispatch({type:'delete',payload:data.id});
-  //   })
-  //   .catch((error)=>{
-  //     showBoundary(error);
-  //   })
-  // }
+  const handleDelete = (id)=>{
+    deleteList(id)
+    .then((data)=>{
+      dispatch(actions.deleteList(data.id));
+    })
+    .catch((error)=>{
+      showBoundary(error);
+    })
+  }
 
   //Fetching data to display
   useEffect(() => {
@@ -96,20 +79,10 @@ const ListContainer = () => {
         {loading ? <Loader />: null}
         {!loading
           ? data.map((list) => {
-              return <List key={list.id} id={list.id} name={list.name} />;
+              return <List key={list.id} id={list.id} name={list.name} handleDelete={handleDelete} />;
             })
           : null}
-        {!loading ? <Card
-          display={isOpen?'none':'flex'}
-          h={"fit-content"}
-          w={"20rem"}
-          opacity={"0.7"}
-          borderRadius={"2xl"}
-          cursor={"pointer"}
-        >
-          <CardHeader onClick={onToggle}>Add another list...</CardHeader>
-        </Card> : null}
-        {isOpen ? <CollapseForm clickOutRef={ref} onToggle={onToggle} addList={addList} /> : null}
+        {!loading ? <CollapseForm addList={addList} />:null}
       </Flex>
     </Box>
   );

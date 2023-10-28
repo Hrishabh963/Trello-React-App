@@ -1,30 +1,48 @@
-import { Button, Card, CardBody, CloseButton, HStack, Input } from '@chakra-ui/react'
+import { Button, Card, CardBody, CardHeader, CloseButton, HStack, Input, useDisclosure, useOutsideClick } from '@chakra-ui/react'
 import React, { useRef, useState,useEffect } from 'react'
 
-const CollapseForm = ({onToggle,addList,handleInputChange,clickOutRef}) => {
+const CollapseForm = ({addList}) => {
   const [input,setInput] = useState('');
+  const { isOpen, onToggle } = useDisclosure();
+  const outRef = useRef();
+  useOutsideClick({
+    ref: outRef,
+    handler: () => {
+      if(isOpen){
+        onToggle();
+      }
+    }
+  })
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
-    handleInputChange(text);
   }
-  const handleClick = ()=>{
-    addList();
-    setInput('')
-  }
-  const inputRef = useRef();
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
   
+  const handleClick = ()=>{
+    addList(input);
+    setInput('');
+  }
+
   return (
-    
-    <Card ref={clickOutRef} backgroundColor={'#f1f2f4'}  w={"20rem"} h={'fit-content'} borderRadius={'2xl'}>
+    <>
+    <Card
+          display={isOpen?'none':'flex'}
+          h={"fit-content"}
+          w={"20rem"}
+          opacity={"0.7"}
+          borderRadius={"2xl"}
+          cursor={"pointer"}
+        >
+          <CardHeader onClick={onToggle}>Add another list...</CardHeader>
+        </Card>
+        {isOpen ? <Card ref={outRef} backgroundColor={'#f1f2f4'}  w={"20rem"} h={'fit-content'} borderRadius={'2xl'}>
       <CardBody>
-        <Input ref={inputRef} value={input} onChange={handleChange} backgroundColor={'white'} autoFocus={true} placeholder='Enter List title...' />
+        <Input value={input} autoFocus={true} onChange={handleChange} backgroundColor={'white'} placeholder='Enter List title...' />
         <HStack py={'1rem'}><Button colorScheme='blue' onClick={handleClick}>Add list</Button> <CloseButton onClick={onToggle} /></HStack>
       </CardBody>
     </Card>
+  :null}
+    </>
 
   )
 }
