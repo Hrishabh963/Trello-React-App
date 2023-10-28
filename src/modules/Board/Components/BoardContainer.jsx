@@ -31,6 +31,7 @@ const BoardContainer = () => {
 
   //Fetching all data
   useEffect(()=>{
+    
     getBoards(showBoundary)
     .then((data)=>{
         dispatch(actions.getBoards(data));

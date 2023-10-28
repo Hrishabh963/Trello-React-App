@@ -9,16 +9,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { actions } from '../../../store/features/cardsSlice'
 
 const List = ({name = '' , id='', handleDelete}) => {
-
   const {showBoundary} = useErrorBoundary();
   const {data,loading} = useSelector((state)=> state.cards)
   const cardData = data[id];
   const dispatch = useDispatch();
+
+  //Function to handle event propagation and send id to be deleted
   const handleListDelete = (event)=>{
     event.stopPropagation();
     handleDelete(id);
     }
 
+  //Function to handle card deletion
   const handleCardDelete = (cardId)=>{
     deleteCard(cardId)
     .then(()=>{
@@ -29,6 +31,7 @@ const List = ({name = '' , id='', handleDelete}) => {
     })
   }
 
+  //
   const addCard = (inputValue) =>{
     if(inputValue === '')return;
     postCard(inputValue,id)

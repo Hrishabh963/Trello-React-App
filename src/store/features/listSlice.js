@@ -24,8 +24,10 @@ const listSlice = createSlice({
         setBackground: (state, action) => {
             state.bgColor = action.payload.backgroundColor;
             state.bgImg = action.payload.backgroundImage;
+        },
+        clearState: () => {
+            return initalState;
         }
-
     }
 })
 

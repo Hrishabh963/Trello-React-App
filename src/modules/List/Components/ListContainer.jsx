@@ -59,6 +59,10 @@ const ListContainer = () => {
     .then((data)=>{
       dispatch(actions.setBackground(data));
     })
+
+    return ()=>{
+      dispatch(actions.clearState());
+    }
   }, []);
 
   //Rendering jsx logic
@@ -73,7 +77,6 @@ const ListContainer = () => {
       backgroundImage={imgUrl}
       bgRepeat={"no-repeat"}
       bgSize={"cover"}
-
     >
       <Flex minW={"fit-content"} spacing={"10"} gap={'2rem'}>
         {loading ? <Loader />: null}

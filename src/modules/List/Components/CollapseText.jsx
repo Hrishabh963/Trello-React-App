@@ -6,6 +6,8 @@ const CollapseText = ({addCard}) => {
   const [input,setInput] = useState('');
   const {isOpen,onToggle} = useDisclosure();
   const formRef = useRef();
+
+  //Custom hook to close form on focus out
   useOutsideClick({
     ref : formRef,
     handler : ()=>{
@@ -14,10 +16,14 @@ const CollapseText = ({addCard}) => {
       }
     }
   })
+  
+  //Function to handle input change
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
   }
+
+  //Function to add card
   const handleClick = ()=>{
     addCard(input);
     setInput('');

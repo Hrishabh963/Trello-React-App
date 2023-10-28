@@ -5,6 +5,8 @@ const CollapseForm = ({addList}) => {
   const [input,setInput] = useState('');
   const { isOpen, onToggle } = useDisclosure();
   const outRef = useRef();
+
+  //Custom hook to close the form on focus off
   useOutsideClick({
     ref: outRef,
     handler: () => {
@@ -13,11 +15,14 @@ const CollapseForm = ({addList}) => {
       }
     }
   })
+
+  //Handeling input change
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
   }
   
+  //Handeling on click
   const handleClick = ()=>{
     addList(input);
     setInput('');
