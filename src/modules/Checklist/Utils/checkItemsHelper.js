@@ -1,12 +1,5 @@
-export const initalState = {
-    checkItems: [],
-    percentage: 0,
-    error: false,
-    loading: true,
-    inputValue: ''
-}
-
 export const calculatePercentage = (checkItems) => {
+    if (!checkItems) return 0;
     const total = checkItems.length;
     if (total === 0) return 0;
     let checked = 0;
@@ -26,54 +19,4 @@ export const changeState = (checked, id, checkItems) => {
         } else return checkItem;
     })
     return UpdatedData;
-}
-export const reducer = (state, action) => {
-    switch (action.type) {
-        case "fetch":
-            {
-                return {
-                    ...state,
-                    checkItems: action.payload,
-                    error: false,
-                    loading: false
-                }
-            }
-        case "post":
-            {
-                return {
-                    ...state,
-                    checkItems: [...state.checkItems, action.payload]
-                }
-            }
-        case "delete":
-            {
-                return {
-                    ...state,
-                    checkItems: state.checkItems.filter((checkItem) => checkItem.id !== action.payload)
-                }
-            }
-        case "setInput":
-            {
-                return {
-                    ...state,
-                    inputValue: action.payload
-                }
-            }
-        case "setPercentage":
-            {
-                return {
-                    ...state,
-                    percentage: calculatePercentage(state.checkItems)
-                }
-            }
-        case "changeState":
-            {
-                return {
-                    ...state,
-                    checkItems: changeState(action.payload.check, action.payload.id, state.checkItems)
-                }
-            }
-        default:
-            return state;
-    }
 }

@@ -1,22 +1,26 @@
 import { CheckCircleIcon, DeleteIcon } from '@chakra-ui/icons'
-import { Button, Flex, IconButton, Progress, Text, useDisclosure, useOutsideClick } from '@chakra-ui/react'
-import React, { useEffect, useReducer, useRef } from 'react'
+import { Flex, IconButton, Progress, Text } from '@chakra-ui/react'
+import React, { useEffect} from 'react'
 import Checkitem from './Checkitem'
 import CheckItemForm from './CheckItemForm'
 import { getCheckItems,postCheckItem,deleteCheckItem,updateCheckState } from '../Utils/checkItemApi'
-import { reducer,initalState } from '../Utils/checkItemsHelper'
 import { useErrorBoundary } from 'react-error-boundary'
-const Checklist = ({id='',name='',cardId='',handleDelete}) => {
-  const [state,dispatch] = useReducer(reducer,initalState);
-  const {showBoundary} = useErrorBoundary();
+import { useDispatch, useSelector } from 'react-redux'
+import { calculatePercentage } from '../Utils/checkItemsHelper'
+import { actions } from '../../../store/features/checkItemsSlice'
 
-  const addCheckItem = ()=>{
-    if(state.inputValue === '') return;
-    postCheckItem(id,state.inputValue)
+const Checklist = ({id='',name='',cardId='',handleDelete}) => {
+  const {showBoundary} = useErrorBoundary();
+  const {data,loading} = useSelector((state)=>state.checkitems); 
+  const dispatch = useDispatch();
+  const checkItemsData = data[id] ? data[id] : [];
+  const percentage =  calculatePercentage(checkItemsData);
+
+  const addCheckItem = (inputValue)=>{
+    if(inputValue === '') return;
+    postCheckItem(id,inputValue)
     .then((data)=>{
-        dispatch({type:'post',payload:data});
-        dispatch({type:'setInput',payload:''});
-        dispatch({type:'setPercentage'})
+        dispatch(actions.postCheckItem({checkListId : id, data : data}));
     })
     .catch((error)=>{
         showBoundary(error);
@@ -24,21 +28,16 @@ const Checklist = ({id='',name='',cardId='',handleDelete}) => {
   }
 
   const handleCheckState = (check,checkItemId)=>{
-    dispatch({type:'changeState',payload:{check : check,id : checkItemId}});
-    dispatch({type:'setPercentage'});
-    updateCheckState(cardId,id,checkItemId,state.checkItems,check)
+    dispatch(actions.updateCheckItemState({checkListId : id,checked : check,id : checkItemId }));
+    updateCheckState(cardId,id,checkItemId,checkItemsData,check)
   }
 
 
-  const handleCheckListDelete = (event)=>{
-    const trigger = event.target.closest('.delete_checkitem');
-    if(!trigger) return;
-    const triggerId = trigger.id;
+  const handleCheckItemsDelete = (triggerId)=>{
     deleteCheckItem(id,triggerId)
     .then((status)=>{
         if(status === 200){
-            dispatch({type:'delete',payload:triggerId});
-            dispatch({type:'setPercentage'})
+            dispatch(actions.deleteCheckItem({checkListId : id, data : triggerId}));
         }
     })
     .catch((error)=>{
@@ -55,8 +54,7 @@ const Checklist = ({id='',name='',cardId='',handleDelete}) => {
   useEffect(()=>{
     getCheckItems(id)
     .then((data)=>{
-        dispatch({type:'fetch',payload:data});
-        dispatch({type:'setPercentage'});
+        dispatch(actions.getCheckItems({checkListId : id , data : data}))
     })
     .catch((error)=>{
         showBoundary(error);
@@ -64,14 +62,12 @@ const Checklist = ({id='',name='',cardId='',handleDelete}) => {
   },[])
 
   return (
-    <Flex direction={'column'} py={'3'} onClick={handleCheckListDelete}>
+    <Flex direction={'column'} py={'3'}>
         <Flex width={'100%'}><CheckCircleIcon mt={'1'} /><Text fontSize={'lg'} fontWeight={'bold'} pl={'2'}>{name}</Text><IconButton onClick={deleteCurrentChecklist} h={'5'} mt={'1'} ml={'3'} _hover={{bgColor:'#FFFFFF',color:'red'}} variant={'ghost'} icon={<DeleteIcon />} /></Flex>
-        {!state.loading && state.checkItems.length > 0 ? <Flex alignItems={'center'}><Text pr={'2'}>{state.percentage}%</Text><Progress size={'sm'} w={'90%'} colorScheme={'green'} value={state.percentage} /></Flex> : null}
-        {!state.loading ? state.checkItems.map((checkitem)=>{
-            return <Checkitem handleCheckState={handleCheckState} key={checkitem.id} checked={checkitem.state === 'complete' ? true : false} name={checkitem.name} id={checkitem.id} />
+        {loading && checkItemsData.length > 0 ? <Flex alignItems={'center'}><Text pr={'2'}>{percentage}%</Text><Progress size={'sm'} w={'90%'} colorScheme={'green'} value={percentage} /></Flex> : null}
+        {loading ? checkItemsData.map((checkitem)=>{
+            return <Checkitem handleCheckState={handleCheckState} key={checkitem.id} handleCheckItemsDelete={handleCheckItemsDelete} checked={checkitem.state === 'complete' ? true : false} name={checkitem.name} id={checkitem.id} />
         }):null}
-        <Flex pt={'2'} direction={'column'} w={{base:'30%',md:'20%'}}>
-        </Flex>
         <CheckItemForm addCheckItem={addCheckItem} />
     </Flex>
   )

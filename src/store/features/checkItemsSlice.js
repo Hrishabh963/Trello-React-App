@@ -28,3 +28,6 @@ const checkItemsSlice = createSlice({
         }
     }
 })
+
+export const checkItemsReducer = checkItemsSlice.reducer;
+export const actions = checkItemsSlice.actions;
