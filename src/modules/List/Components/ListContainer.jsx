@@ -2,7 +2,7 @@ import {
   Box,
   Flex,
 } from "@chakra-ui/react";
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect} from "react";
 import { useParams } from "react-router-dom";
 import List from "./List";
 import CollapseForm from "./CollapseForm";

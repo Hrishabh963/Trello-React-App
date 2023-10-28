@@ -1,33 +1,33 @@
-import { Box, Button, CloseButton, Collapse, Flex, Textarea } from '@chakra-ui/react'
+import { Box, Button, CloseButton, Collapse, Flex, Textarea, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect,useRef, useState } from 'react'
 
-const CheckItemForm = ({isOpen=false,onToggle,addCheckItem,handleInputChange,clickOutsideRef}) => {
-  const inpRef = useRef();
+const CheckItemForm = ({addCheckItem}) => {
   const [input,setInput] = useState('');
+  const {isOpen,onToggle} = useDisclosure();
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
-    handleInputChange(text);
   }
 
   const handleClick = ()=>{
     addCheckItem();
     setInput('');
   }
-  useEffect(()=>{
-    inpRef.current.focus();
-  },[isOpen])
+
   return (
-    <Box w={'40%'} ref={clickOutsideRef}>
+    <>
+    <Button display={isOpen ? 'none' : 'flex'} colorScheme='gray' fontSize={'sm'} w={'23%'} onClick={onToggle} >Add an item</Button>
+    <Box w={'40%'}>
     <Collapse in={isOpen}>
       <Flex direction={'column'} w={'100%'} pt={'2'}>
-        <Textarea value={input} onChange={handleChange} ref={inpRef} resize={'none'} placeholder='Add checkitem...' />
+        <Textarea value={input} onChange={handleChange} resize={'none'} placeholder='Add checkitem...' />
         <Flex pt={'2'}>
         <Button onClick={handleClick} colorScheme='blue'>Add item</Button><CloseButton ml={'1'} size={'lg'} onClick={onToggle} />
         </Flex>
       </Flex>
     </Collapse>
     </Box>
+    </>
   )
 }
 

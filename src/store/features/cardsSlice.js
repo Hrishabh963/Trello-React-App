@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
-    data: [],
+    data: {},
     loading: true,
 }
 
@@ -9,14 +9,14 @@ const cardSlice = createSlice({
     initialState,
     reducers: {
         getCards: (state, action) => {
-            state.data = action.payload;
+            state.data[action.payload.listId] = action.payload.cardsData;
             state.loading = false;
         },
         postCard: (state, action) => {
-            state.data.push(action.payload);
+            state.data[action.payload.listId].push(action.payload.cardData);
         },
         deleteCard: (state, action) => {
-            state.data = state.data.filter((card) => card.id !== action.payload);
+            state.data[action.payload.listId] = state.data[action.payload.listId].filter((card) => card.id !== action.payload.cardId);
         }
 
     }

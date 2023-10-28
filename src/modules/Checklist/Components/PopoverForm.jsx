@@ -13,16 +13,15 @@ import {
     Button,
 } from '@chakra-ui/react';
 
-const PopoverForm = ({handleInput,addNewCheckList}) => {
+const PopoverForm = ({addNewCheckList}) => {
   const [input,setInput] = useState('');
   const inputRef = useRef();
   const handleChange = (event)=>{
     const text = event.target.value;
     setInput(text);
-    handleInput(text);
   }
   const handleClick = ()=>{
-    addNewCheckList();
+    addNewCheckList(input);
     setInput('');
   }
   return (

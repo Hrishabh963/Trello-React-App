@@ -1,6 +1,6 @@
-import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
-import { Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, Spinner, useOutsideClick} from '@chakra-ui/react'
-import React, { useEffect, useRef } from 'react'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { Card, CardBody, CardFooter, CardHeader, IconButton ,Flex, Text, Spinner} from '@chakra-ui/react'
+import React, { useEffect } from 'react'
 import CardsContainer from '../../Card/Components/CardsContainer'
 import CollapseText from './CollapseText'
 import { getCards, postCard, deleteCard } from '../Utils/CardApi'
@@ -12,48 +12,39 @@ const List = ({name = '' , id='', handleDelete}) => {
 
   const {showBoundary} = useErrorBoundary();
   const {data,loading} = useSelector((state)=> state.cards)
+  const cardData = data[id];
   const dispatch = useDispatch();
-  const ref = useRef()
-  const toggleForm = ()=>{
-    dispatch({type :'showForm'})
+  const handleListDelete = (event)=>{
+    event.stopPropagation();
+    handleDelete(id);
+    }
+
+  const handleCardDelete = (cardId)=>{
+    deleteCard(cardId)
+    .then(()=>{
+      dispatch(actions.deleteCard({listId : id, cardId : cardId}));
+    })
+    .catch((error)=>{
+      showBoundary(error);
+    })
   }
 
-  const handleInputChange = (value)=>{
-    dispatch({type:'setInput',payload:value});
-  }
-
-  // const handleDelete = (event)=>{
-  //   const trigger = event.target.closest('.delete_card');
-  //   if(!trigger) return;
-  //   const triggerId = trigger.id;
-  //   deleteCard(triggerId)
-  //   .then((status)=>{
-  //     if(status === 200){
-  //       dispatch({type:'deleteCard',payload:triggerId})
-  //     }
-  //   })
-  //   .catch(error=>{
-  //     showBoundary(error)
-  //   })
-  // }
-
-  const addCard = ()=>{
-    // if(state.inputValue === '')return;
-    // postCard(state.inputValue,id)
-    // .then((data)=>{
-    //   dispatch({type:'post',payload:{id:data.id,name:data.name}});
-    //   dispatch({type:'setInput',payload:''});
-    // })
-    // .catch((error)=>{
-    //   showBoundary(error);
-    // })
+  const addCard = (inputValue) =>{
+    if(inputValue === '')return;
+    postCard(inputValue,id)
+    .then((data)=>{
+      dispatch(actions.postCard({listId:id,cardData:data}));
+    })
+    .catch((error)=>{
+      showBoundary(error);
+    })
     
   }
 
   useEffect(()=>{
     getCards(id)
     .then((data)=>{
-      dispatch(actions.getCards(data));
+      dispatch(actions.getCards({listId : id,cardsData : data}));
     })
     .catch((error)=>{
       showBoundary(error);
@@ -65,20 +56,16 @@ const List = ({name = '' , id='', handleDelete}) => {
       <CardHeader fontWeight={'bold'} fontSize={'0.9rem'}>
         <Flex w={'100%'} justifyContent={'space-between'}>
         <Text>{name}</Text>
-        <IconButton onClick={(event)=>{
-          event.stopPropagation();
-          handleDelete(id);
-          }}  _hover={{color:'red'}}  icon={<DeleteIcon />} mt={'-2'} cursor={'pointer'} className='delete_list'  />
+        <IconButton onClick={handleListDelete}  _hover={{color:'red'}}  icon={<DeleteIcon />} mt={'-2'} cursor={'pointer'} className='delete_list'  />
         </Flex>
       </CardHeader>
       <CardBody mt={'-10'}>
         {loading ? <Spinner thickness='3px' color='darkGray' emptyColor='gray.200' /> : null}
-        {!loading ? <CardsContainer list={name} cards={data} /> : null}
+        {!loading ? <CardsContainer handleCardDelete={handleCardDelete} list={name} cards={cardData} /> : null}
       </CardBody>
       <CardFooter mt={'-10'}>
         <Flex direction={'column'} w={'100%'}>
-       
-          {!loading ? <CollapseText closeOutsideRef={ref} addCard={addCard} handleInputChange={handleInputChange} toggleForm={toggleForm} /> : null}
+          {!loading ? <CollapseText addCard={addCard} /> : null}
         </Flex>
       </CardFooter>
     </Card>
