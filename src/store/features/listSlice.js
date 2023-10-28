@@ -3,6 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const initalState = {
     data: [],
     loading: true,
+    bgColor: undefined,
+    bgImg: undefined
 }
 
 const listSlice = createSlice({
@@ -18,7 +20,12 @@ const listSlice = createSlice({
         },
         deleteList: (state, action) => {
             state.data.filter((list) => list.id !== action.payload.id)
+        },
+        setBackground: (state, action) => {
+            state.bgColor = action.payload.backgroundColor;
+            state.bgImg = action.payload.backgroundImage;
         }
+
     }
 })
 
