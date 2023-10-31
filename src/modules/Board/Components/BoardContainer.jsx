@@ -2,43 +2,29 @@ import { SimpleGrid} from "@chakra-ui/react";
 import { useEffect} from "react";
 import Board from "./Board";
 import ModalForm from "./ModalForm";
-import { getBoards,postBoard } from "../Utils/boardApi";
 import Loader from "../../Common/Components/Loader";
 import { useErrorBoundary } from "react-error-boundary";
 import { useDispatch,useSelector } from "react-redux";
-import { actions } from "../../../store/features/boardSlice";
+import {fetchBoards, postBoard } from "../../../store/features/boardSlice";
 
 const BoardContainer = () => {
   //Error boundary custom hook
   const { showBoundary } = useErrorBoundary();
   
-  //Custom hook provided by chakra to manage modals/popovers
-  const {data,loading} = useSelector((state)=> state.board);   //Using useSelector to get my current state
-  const dispatch = useDispatch();   //Dispatches types to relevent reducers
+  const {data,loading,error} = useSelector((state)=> state.board);   //Using useSelector to get my current state
+  const dispatch = useDispatch();     //Dispatches types to relevent reducers
+  if(error) showBoundary(error); 
 
   //Function to add new board
   const addBoard = (input)=>{
     if(input === '') return;
-    postBoard(input)
-    .then((data)=>{
-      dispatch(actions.postBoard(data));
-    })
-    .catch((error)=>{
-      showBoundary(error);
-    })
+    dispatch(postBoard(input));
   }
 
 
   //Fetching all data
   useEffect(()=>{
-    
-    getBoards(showBoundary)
-    .then((data)=>{
-        dispatch(actions.getBoards(data));
-    })
-    .catch((error)=>{
-      showBoundary(error);
-    })
+    dispatch(fetchBoards());
   },[])
 
   return (
@@ -49,7 +35,7 @@ const BoardContainer = () => {
       columns={{base:'1',md:'2',lg:'4'}}
     >
       {loading ? <Loader /> : null}
-      {
+      { !loading &&
         data.map((board) => {
           return (
             <Board
